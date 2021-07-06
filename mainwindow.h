@@ -18,14 +18,15 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-public slots:
-    void updateMessage(const QMqttMessage &msg);
-
 protected:
     void timerEvent(QTimerEvent *event);
 
 private slots:
+    void updateLogStateChange();
+    void brokerDisconnected();
+
     void on_actionConnect_triggered();
+    void on_actionSubscript_triggered();
 
 private:
     Ui::MainWindow *ui;
