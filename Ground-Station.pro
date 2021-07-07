@@ -12,13 +12,16 @@ CONFIG += c++11
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    mapdialog.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    mapdialog.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    mapdialog.ui
 
 include(qfi/qfi.pri)
 

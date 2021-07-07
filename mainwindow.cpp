@@ -99,3 +99,12 @@ void MainWindow::on_actionSubscript_triggered()
         }
 }
 
+
+void MainWindow::on_pushButton_OpenMap_clicked()
+{
+    mapDialog = new MapDialog(this);
+    mapDialog->show();
+    mapDialog->setWindowTitle("Map");
+
+}
+
