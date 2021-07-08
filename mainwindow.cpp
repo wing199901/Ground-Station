@@ -1,57 +1,68 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
-
-#include <QtCore>
-//#include <QtMqtt/QMqttClient>
-#include "qmqttclient.h"
-#include <QtWidgets/QMessageBox>
 
 #include <QThread>
+#include <QtCore>
+#include <QtWidgets/QMessageBox>
+
+#include "ui_mainwindow.h"
+
+//#include <QtMqtt/QMqttClient>
+#include "qmqttclient.h"
 
 class Sleeper : public QThread
 {
 public:
-    static void usleep(unsigned long usecs){QThread::usleep(usecs);}
-    static void msleep(unsigned long msecs){QThread::msleep(msecs);}
-    static void sleep(unsigned long secs){QThread::sleep(secs);}
+    static void usleep(unsigned long usecs) { QThread::usleep(usecs); }
+    static void msleep(unsigned long msecs) { QThread::msleep(msecs); }
+    static void sleep(unsigned long secs) { QThread::sleep(secs); }
 };
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-    , timerId(0)
+    : QMainWindow(parent), ui(new Ui::MainWindow), timerId(0)
 {
     ui->setupUi(this);
     ui->menubar->setNativeMenuBar(true);
     timerId = startTimer(50);
 
     m_client = new QMqttClient(this);
-    m_client->setHostname("aerosimmqtt.eastasia.azurecontainer.io");
+    //m_client->setHostname("aerosimmqtt.eastasia.azurecontainer.io");
+    m_client->setHostname("192.168.0.225");
     m_client->setPort(1883);
 
-    connect(m_client, &QMqttClient::stateChanged, this, &MainWindow::updateLogStateChange);
-    connect(m_client, &QMqttClient::disconnected, this, &MainWindow::brokerDisconnected);
+    connect(m_client, &QMqttClient::stateChanged, this,
+            &MainWindow::updateLogStateChange);
+    connect(m_client, &QMqttClient::disconnected, this,
+            &MainWindow::brokerDisconnected);
 
-    connect(m_client, &QMqttClient::messageReceived, this, [this](const QByteArray &message, const QMqttTopicName &topic) {
-            const QString content = QDateTime::currentDateTime().toString()
-                        + QLatin1String(" Received Topic: ")
-                        + topic.name()
-                        + QLatin1String(" Message: ")
-                        + message
-                        + QLatin1Char('\n');
-            ui->editLog->insertPlainText(content);
+    connect(m_client, &QMqttClient::messageReceived, this, [this](const QByteArray &message, const QMqttTopicName &topic)
+            {
+                const QString content = QDateTime::currentDateTime().toString() +
+                                        QLatin1String(" Received Topic: ") +
+                                        topic.name() + QLatin1String(" Message: ") +
+                                        message + QLatin1Char('\n');
 
-            QJsonDocument doc = QJsonDocument::fromJson(message);
-            QJsonObject jsonObj = doc.object();
+                ui->editLog->insertPlainText(content);
 
-            ui->graphicsEADI->setAirspeed(jsonObj["IAS"].toDouble());
-            ui->graphicsEADI->setAltitude(jsonObj["Altitude"].toDouble());
-            ui->graphicsEADI->setClimbRate(jsonObj["Vertical Speed"].toDouble() / 100);
-            ui->graphicsEADI->setHeading(jsonObj["Heading"].toDouble());
-            ui->graphicsEADI->setPitch(jsonObj["Pitch"].toDouble());
-            ui->graphicsEADI->setRoll(jsonObj["Roll"].toDouble());
-            ui->graphicsEADI->setTurnRate(jsonObj["Turn Rate"].toDouble());
-        });
+                QJsonDocument doc = QJsonDocument::fromJson(message);
+                QJsonObject json = doc.object();
+
+                ui->graphicsEADI->setAirspeed(json["IAS"].toDouble());
+                ui->graphicsEADI->setAirspeedSel(json["AirspeedSel"].toDouble());
+                ui->graphicsEADI->setAltitude(json["Altitude"].toDouble());
+                ui->graphicsEADI->setAltitudeSel(json["AltitudeSel"].toDouble());
+                ui->graphicsEADI->setClimbRate(json["Vertical Speed"].toDouble() / 1000);
+                ui->graphicsEADI->setHeading(json["Heading"].toDouble());
+                ui->graphicsEADI->setHeadingSel(json["HeadingSel"].toDouble());
+                ui->graphicsEADI->setMachNo(json["Mach"].toDouble());
+                ui->graphicsEADI->setPitch(json["Pitch"].toDouble());
+                ui->graphicsEADI->setPressure(json["Pressure"].toDouble(), qfi_EADI::PressureMode::MB);
+                ui->graphicsEADI->setRoll(json["Roll"].toDouble());
+                ui->graphicsEADI->setSlipSkid(json["Slip Skid"].toDouble());
+                ui->graphicsEADI->setStall(json["Stall"].toBool());
+                ui->graphicsEADI->setTurnRate(json["Turn Rate"].toDouble() / 1024);
+
+                qDebug() << json["AOA"].toDouble();
+            });
 
     Sleeper::sleep(1);
 }
@@ -71,31 +82,34 @@ void MainWindow::timerEvent(QTimerEvent *event)
 
 void MainWindow::updateLogStateChange()
 {
-    const QString content = QDateTime::currentDateTime().toString()
-                    + QLatin1String(": State Change")
-                    + QString::number(m_client->state())
-                    + QLatin1Char('\n');
+    const QString content = QDateTime::currentDateTime().toString() +
+                            QLatin1String(": State Change") +
+                            QString::number(m_client->state()) +
+                            QLatin1Char('\n');
     ui->editLog->insertPlainText(content);
 }
 
 void MainWindow::brokerDisconnected()
 {
+    QMessageBox::critical(
+        this, QLatin1String("Error"),
+        QLatin1String("Broker disconnected."));
     QApplication::quit();
 }
-
 
 void MainWindow::on_actionConnect_triggered()
 {
     m_client->connectToHost();
 }
 
-
 void MainWindow::on_actionSubscript_triggered()
 {
-    auto subscription = m_client->subscribe(QMqttTopicFilter("/Sensor/ModelA"),0);
-        if (!subscription) {
-            QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not subscribe. Is there a valid connection?"));
-            return;
-        }
+    auto subscription = m_client->subscribe(QMqttTopicFilter("/Sensor/ModelA"), 0);
+    if (!subscription)
+    {
+        QMessageBox::critical(
+            this, QLatin1String("Error"),
+            QLatin1String("Could not subscribe. Is there a valid connection?"));
+        return;
+    }
 }
-
