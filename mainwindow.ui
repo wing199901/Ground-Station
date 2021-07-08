@@ -21,6 +21,13 @@
        <item row="0" column="0">
         <widget class="QPlainTextEdit" name="editLog"/>
        </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="pushButton_OpenMap">
+         <property name="text">
+          <string>Open Map</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -121,7 +128,7 @@
      <x>0</x>
      <y>0</y>
      <width>1142</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
    <property name="defaultUp">

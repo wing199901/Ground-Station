@@ -6,6 +6,7 @@
 
 //#include <QtMqtt/QMqttClient>
 #include "qmqttclient.h"
+#include "mapdialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -32,10 +33,14 @@ private slots:
     void on_actionConnect_triggered();
     void on_actionSubscript_triggered();
 
+    void on_pushButton_OpenMap_clicked();
+
 private:
     Ui::MainWindow *ui;
     int timerId;
     QMqttClient *m_client;
     QMqttTopicFilter topic;
+
+    MapDialog *mapDialog;
 };
 #endif // MAINWINDOW_H
