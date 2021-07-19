@@ -1,8 +1,11 @@
 #include "mainwindow.h"
 
+#include <QQmlContext>
+#include <QQuickWidget>
 #include <QThread>
 #include <QtCore>
-#include <QtWidgets/QMessageBox>
+#include <QtNetwork>
+#include <QtWidgets>
 
 #include "ui_mainwindow.h"
 
@@ -24,9 +27,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->menubar->setNativeMenuBar(true);
     timerId = startTimer(50);
 
+    double longtude = 22.3035;
+    ui->quickWidget->rootContext()->setContextProperty("longtude", longtude);
+    ui->quickWidget->rootContext()->setContextProperty("latitude", 114.2021);
+    ui->quickWidget->setSource(QUrl("qrc:/qmlMap.qml"));
+    ui->quickWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
+
     m_client = new QMqttClient(this);
     //m_client->setHostname("aerosimmqtt.eastasia.azurecontainer.io");
-    m_client->setHostname("192.168.0.225");
+    m_client->setHostname("192.168.0.128");
     m_client->setPort(1883);
 
     connect(m_client, &QMqttClient::stateChanged, this,
@@ -41,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent)
                                         topic.name() + QLatin1String(" Message: ") +
                                         message + QLatin1Char('\n');
 
-                ui->editLog->insertPlainText(content);
+                //ui->editLog->insertPlainText(content);
 
                 QJsonDocument doc = QJsonDocument::fromJson(message);
                 QJsonObject json = doc.object();
@@ -86,7 +95,7 @@ void MainWindow::updateLogStateChange()
                             QLatin1String(": State Change") +
                             QString::number(m_client->state()) +
                             QLatin1Char('\n');
-    ui->editLog->insertPlainText(content);
+    //ui->editLog->insertPlainText(content);
 }
 
 void MainWindow::brokerDisconnected()
@@ -113,13 +122,3 @@ void MainWindow::on_actionSubscript_triggered()
         return;
     }
 }
-
-
-void MainWindow::on_pushButton_OpenMap_clicked()
-{
-    mapDialog = new MapDialog(this);
-    mapDialog->show();
-    mapDialog->setWindowTitle("Map");
-
-}
-

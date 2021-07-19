@@ -1,10 +1,8 @@
-QT       += core gui mqtt network svg
+QT       += core gui mqtt network svg quickwidgets positioning
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-greaterThan(QT_MAJOR_VERSION, 5)  QT += svgwidgets
-
-CONFIG += c++11
+CONFIG += c++11 sdk_no_version_check
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -12,16 +10,13 @@ CONFIG += c++11
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp \
-    mapdialog.cpp
+    mainwindow.cpp
 
 HEADERS += \
-    mainwindow.h \
-    mapdialog.h
+    mainwindow.h
 
 FORMS += \
-    mainwindow.ui \
-    mapdialog.ui
+    mainwindow.ui
 
 include(qfi/qfi.pri)
 
@@ -29,3 +24,8 @@ include(qfi/qfi.pri)
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES +=
+
+RESOURCES += \
+    qml.qrc
