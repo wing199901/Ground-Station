@@ -27,9 +27,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->menubar->setNativeMenuBar(true);
     timerId = startTimer(50);
 
-    double longtude = 22.3035;
-    ui->quickWidget->rootContext()->setContextProperty("longtude", longtude);
-    ui->quickWidget->rootContext()->setContextProperty("latitude", 114.2021);
     ui->quickWidget->setSource(QUrl("qrc:/qmlMap.qml"));
     ui->quickWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
 
