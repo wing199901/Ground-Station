@@ -27,12 +27,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->menubar->setNativeMenuBar(true);
     timerId = startTimer(50);
 
+    ui->quickWidget->rootContext()->setContextProperty("longitude", 22.3035);
+    ui->quickWidget->rootContext()->setContextProperty("latitude", 114.2021);
     ui->quickWidget->setSource(QUrl("qrc:/qmlMap.qml"));
     ui->quickWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
 
     m_client = new QMqttClient(this);
     //m_client->setHostname("aerosimmqtt.eastasia.azurecontainer.io");
-    m_client->setHostname("192.168.0.128");
+    m_client->setHostname("192.168.0.129");
     m_client->setPort(1883);
 
     connect(m_client, &QMqttClient::stateChanged, this,
@@ -66,6 +68,8 @@ MainWindow::MainWindow(QWidget *parent)
                 ui->graphicsEADI->setSlipSkid(json["Slip Skid"].toDouble());
                 ui->graphicsEADI->setStall(json["Stall"].toBool());
                 ui->graphicsEADI->setTurnRate(json["Turn Rate"].toDouble() / 1024);
+                ui->quickWidget->rootContext()->setContextProperty("longitude", json["Longitude"].toDouble());
+                ui->quickWidget->rootContext()->setContextProperty("latitude", json["Latitude"].toDouble());
 
                 qDebug() << json["AOA"].toDouble();
             });
