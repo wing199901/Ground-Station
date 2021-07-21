@@ -5,41 +5,57 @@ import datetime
 import json
 import math
 import socket
+import ssl
 
-import paho.mqtt.client as mqtt
 from fsuipc import FSUIPC
+from paho.mqtt import client as mqtt
+
+path_to_root_cert = "digicert.cer"
+device_id = "<device id from device registry>"
+sas_token = "<generated SAS token>"
+iot_hub_name = "<iot hub name>"
 
 
-# Define event callbacks
-def on_connect(mqttc, obj, flags, rc):
-    print("connect rc: " + str(rc))
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code " + str(rc))
+    client.subscribe("/Sensors/ModelA/+/Command", qos=2)
 
 
-def on_message(mqttc, obj, msg):
+def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
 
+    message = msg.payload.decode('utf-8')
 
-def on_publish(mqttc, obj, mid):
+
+def on_publish(client, userdata, mid):
     print("mid: " + str(mid))
 
 
-def on_log(mqttc, obj, level, string):
-    print(string)
+def on_disconnect(client, userdata, rc=0):
+    print("Disconnected with result code " + str(rc))
+    client.loop_stop()
+
+
+def receiveCommand(message):
+    with FSUIPC() as fsuipc:
+        if message['Pause'] == True:
+            fsuipc.write([(0x262, "H", 1)])
+        else:
+            fsuipc.write([(0x262, "H", 0)])
 
 
 if __name__ == "__main__":
+    #client = mqtt.Client(client_id=device_id, protocol=mqtt.MQTTv311)
     client = mqtt.Client()
     # Assign event callbacks
     client.on_connect = on_connect
     client.on_message = on_message
     client.on_publish = on_publish
-
-    # Uncomment to enable debug messages
-    client.on_log = on_log
+    client.on_disconnect = on_disconnect
 
     # Connect to the Broker
     # client.connect('aerosimmqtt.eastasia.azurecontainer.io', 1883, 60)
-    client.connect('192.168.0.225', 1883, 60)
+    client.connect('192.168.0.129', 1883, 60)
 
     client.loop_start()
 
