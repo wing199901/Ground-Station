@@ -31,6 +31,8 @@ private slots:
     void on_actionConnect_triggered();
     void on_actionSubscript_triggered();
 
+    void on_actionPause_toggled(bool arg1);
+
 private:
     Ui::MainWindow *ui;
     int timerId;

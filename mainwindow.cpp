@@ -50,28 +50,32 @@ MainWindow::MainWindow(QWidget *parent)
                                         message + QLatin1Char('\n');
 
                 //ui->editLog->insertPlainText(content);
+                qDebug() << content;
 
                 QJsonDocument doc = QJsonDocument::fromJson(message);
                 QJsonObject json = doc.object();
 
-                ui->graphicsEADI->setAirspeed(json["IAS"].toDouble());
-                ui->graphicsEADI->setAirspeedSel(json["AirspeedSel"].toDouble());
-                ui->graphicsEADI->setAltitude(json["Altitude"].toDouble());
-                ui->graphicsEADI->setAltitudeSel(json["AltitudeSel"].toDouble());
-                ui->graphicsEADI->setClimbRate(json["Vertical Speed"].toDouble() / 1000);
-                ui->graphicsEADI->setHeading(json["Heading"].toDouble());
-                ui->graphicsEADI->setHeadingSel(json["HeadingSel"].toDouble());
-                ui->graphicsEADI->setMachNo(json["Mach"].toDouble());
-                ui->graphicsEADI->setPitch(json["Pitch"].toDouble());
-                ui->graphicsEADI->setPressure(json["Pressure"].toDouble(), qfi_EADI::PressureMode::MB);
-                ui->graphicsEADI->setRoll(json["Roll"].toDouble());
-                ui->graphicsEADI->setSlipSkid(json["Slip Skid"].toDouble());
-                ui->graphicsEADI->setStall(json["Stall"].toBool());
-                ui->graphicsEADI->setTurnRate(json["Turn Rate"].toDouble() / 1024);
-                ui->quickWidget->rootContext()->setContextProperty("longitude", json["Longitude"].toDouble());
-                ui->quickWidget->rootContext()->setContextProperty("latitude", json["Latitude"].toDouble());
+                ui->graphicsEADI->setAirspeed(json["ias"].toDouble());
+                ui->graphicsEADI->setAirspeedSel(json["airspeedSel"].toDouble());
+                ui->graphicsEADI->setAltitude(json["altitude"].toDouble());
+                ui->graphicsEADI->setAltitudeSel(json["altitudeSel"].toDouble());
+                ui->graphicsEADI->setClimbRate(json["verticalSpeed"].toDouble() / 1000);
+                ui->graphicsEADI->setHeading(json["heading"].toDouble());
+                ui->graphicsEADI->setHeadingSel(json["headingSel"].toDouble());
+                ui->graphicsEADI->setMachNo(json["mach"].toDouble());
+                ui->graphicsEADI->setOverspeed(json["overspeed"].toBool() || json["ias"].toDouble() > 100);
+                ui->graphicsEADI->setPitch(json["pitch"].toDouble());
+                ui->graphicsEADI->setPressure(json["pressure"].toDouble(), qfi_EADI::PressureMode::MB);
+                ui->graphicsEADI->setRoll(json["roll"].toDouble());
+                ui->graphicsEADI->setSlipSkid(json["slipskid"].toDouble());
+                ui->graphicsEADI->setStall(json["stall"].toBool());
+                ui->graphicsEADI->setTurnRate(json["turnRate"].toDouble() / 1024);
+                //ui->quickWidget->rootContext()->setContextProperty("longitude", json["longitude"].toDouble());
+                //ui->quickWidget->rootContext()->setContextProperty("latitude", json["latitude"].toDouble());
 
-                qDebug() << json["AOA"].toDouble();
+                qDebug() << json["pause"].toBool();
+                qDebug() << json["longitude"].toDouble();
+                qDebug() << json["latitude"].toDouble();
             });
 
     Sleeper::sleep(1);
@@ -97,6 +101,7 @@ void MainWindow::updateLogStateChange()
                             QString::number(m_client->state()) +
                             QLatin1Char('\n');
     //ui->editLog->insertPlainText(content);
+    qDebug() << content;
 }
 
 void MainWindow::brokerDisconnected()
@@ -114,7 +119,7 @@ void MainWindow::on_actionConnect_triggered()
 
 void MainWindow::on_actionSubscript_triggered()
 {
-    auto subscription = m_client->subscribe(QMqttTopicFilter("/Sensor/ModelA"), 0);
+    auto subscription = m_client->subscribe(QMqttTopicFilter("/Sensors/ModelA"), 0);
     if (!subscription)
     {
         QMessageBox::critical(
@@ -122,4 +127,17 @@ void MainWindow::on_actionSubscript_triggered()
             QLatin1String("Could not subscribe. Is there a valid connection?"));
         return;
     }
+}
+
+void MainWindow::on_actionPause_toggled(bool arg1)
+{
+    QString boolText = arg1 ? "true" : "false";
+
+    QJsonObject obj;
+    obj["pause"] = arg1;
+
+    QJsonDocument doc(obj);
+    QByteArray data = doc.toJson();
+
+    m_client->publish(QMqttTopicName("/Sensors/ModelA/Command"), data, 2, false);
 }

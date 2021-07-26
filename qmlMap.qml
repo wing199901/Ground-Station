@@ -9,17 +9,16 @@ Item {
 
     width: 500 ; height: 500
 
-    Plugin {
-        id: mapPlugin
-        name: "osm"
-    }
-
     Map {
         anchors.fill: parent
-        plugin: mapPlugin
         //center: QtPositioning.coordinate(22.3035, 114.2021)
         center: QtPositioning.coordinate(longitude, latitude)
         zoomLevel: 12
+        maximumZoomLevel: 14
+        minimumZoomLevel: 1
         copyrightsVisible: false
+        plugin: Plugin {
+            name: "osm" // "mapboxgl", "esri", ...
+        }
     }
 }
