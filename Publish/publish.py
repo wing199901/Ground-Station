@@ -5,6 +5,7 @@ import datetime
 import json
 import math
 import socket
+from time import sleep
 
 from fsuipc import FSUIPC
 from paho.mqtt import client as mqtt
@@ -12,10 +13,10 @@ from paho.mqtt import client as mqtt
 
 def payload():
     with FSUIPC() as fsuipc:
-
-        pause, ias, vertical_speed, compass, stall, overspeed, slip_skid, turn_rate, latitude, longitude,  pitch, roll, heading, heading_sel, altitude_sel, airspeed_sel, pressure, mach, angle_of_attack, side_slip,  altitude = prepared.read()
+        pause, pitot, ias, vertical_speed, compass, stall, overspeed, slip_skid, turn_rate, latitude, longitude,  pitch, roll, heading, heading_sel, altitude_sel, airspeed_sel, pressure, mach, angle_of_attack, side_slip,  altitude = prepared.read()
 
         print(f"Pause: {pause}")
+        print(f"Pitot: {pitot}")
         print(f"IAS: {ias}")
         print(f"Vertical Speed: {vertical_speed}")
         print(f"Compass: {compass}")
@@ -41,6 +42,7 @@ def payload():
             'name': socket.gethostname(),
             'time': datetime.datetime.now().strftime('%m/%d %H:%M:%S'),
             'pause': bool(pause),
+            'pitot': bool(pitot),
             'ias': ias / 128,
             'verticalSpeed': vertical_speed * 60 * 3.28084 / 256,
             'compass': compass,
@@ -81,8 +83,12 @@ def on_message(client, userdata, msg):
     with FSUIPC() as fsuipc:
         if message['pause'] == True:
             fsuipc.write([(0x262, "H", 1)])
-        else:
+        elif message['pause'] == False:
             fsuipc.write([(0x262, "H", 0)])
+
+        if message['reset'] == True:
+            # "Situation reset" control (65591)
+            fsuipc.write([(0x3110, "l", 65591)])
 
 
 def on_publish(client, userdata, mid):
@@ -112,11 +118,10 @@ if __name__ == "__main__":
     # client.connect('aerosimmqtt.eastasia.azurecontainer.io', 1883, 60)
     client.connect('192.168.0.129', 1883, 60)
 
-    client.loop_start()
-
     with FSUIPC() as fsuipc:
         prepared = fsuipc.prepare_data([
             (0x264, "H"),  # Pause Indicator
+            (0x29C, "c"),  # Pitot
             (0x2BC, "d"),  # IAS
             (0x2C8, "d"),  # Vertical Speed
             (0x2CC, "d"),  # Compass
@@ -139,5 +144,6 @@ if __name__ == "__main__":
             (0x3324, "d"),  # Altitude
         ], True)
 
-    while client.loop() == 0:
+    while True:
         client.publish("/Sensors/ModelA", json.dumps(payload()))
+        client.loop()

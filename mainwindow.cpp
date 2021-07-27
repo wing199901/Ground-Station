@@ -63,7 +63,7 @@ MainWindow::MainWindow(QWidget *parent)
                 ui->graphicsEADI->setHeading(json["heading"].toDouble());
                 ui->graphicsEADI->setHeadingSel(json["headingSel"].toDouble());
                 ui->graphicsEADI->setMachNo(json["mach"].toDouble());
-                ui->graphicsEADI->setOverspeed(json["overspeed"].toBool() || json["ias"].toDouble() > 100);
+                ui->graphicsEADI->setOverspeed(json["overspeed"].toBool() || json["ias"].toDouble() > 255);
                 ui->graphicsEADI->setPitch(json["pitch"].toDouble());
                 ui->graphicsEADI->setPressure(json["pressure"].toDouble(), qfi_EADI::PressureMode::MB);
                 ui->graphicsEADI->setRoll(json["roll"].toDouble());
@@ -131,10 +131,21 @@ void MainWindow::on_actionSubscript_triggered()
 
 void MainWindow::on_actionPause_toggled(bool arg1)
 {
-    QString boolText = arg1 ? "true" : "false";
-
     QJsonObject obj;
-    obj["pause"] = arg1;
+    obj.insert("pause", arg1);
+    obj.insert("reset", QJsonValue::Type::Null);
+
+    QJsonDocument doc(obj);
+    QByteArray data = doc.toJson();
+
+    m_client->publish(QMqttTopicName("/Sensors/ModelA/Command"), data, 2, false);
+}
+
+void MainWindow::on_actionReset_triggered()
+{
+    QJsonObject obj;
+    obj.insert("pause", QJsonValue::Type::Null);
+    obj.insert("reset", true);
 
     QJsonDocument doc(obj);
     QByteArray data = doc.toJson();

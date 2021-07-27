@@ -67,5 +67,6 @@
         <file>images/vsi/vsi_face.svg</file>
         <file>images/vsi/vsi_hand.svg</file>
         <file>images/eadi/eadi_adi_overspeed.svg</file>
+        <file>images/eadi/eadi_adi_pause.svg</file>
     </qresource>
 </RCC>

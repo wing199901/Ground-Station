@@ -517,7 +517,7 @@ qfi_EADI::ADI::ADI(QGraphicsScene *scene)
     , _maskZ(60)
     , _turnZ(70)
     , _stallZ(80)
-    , _overSpeedZ(80)
+    , _overspeedZ(80)
 {
     reset();
 }
@@ -601,7 +601,7 @@ void qfi_EADI::ADI::init(double scaleX, double scaleY)
 
     _itemOverspeed = new QGraphicsSvgItem(":/qfi/images/eadi/eadi_adi_overspeed.svg");
     _itemOverspeed->setCacheMode(QGraphicsItem::NoCache);
-    _itemOverspeed->setZValue(_overSpeedZ);
+    _itemOverspeed->setZValue(_overspeedZ);
     _itemOverspeed->setTransform(QTransform::fromScale(_scaleX, _scaleY), true);
     _itemOverspeed->moveBy(_scaleX * _originalOverspeedPos.x(), _scaleY * _originalOverspeedPos.y());
     _scene->addItem(_itemOverspeed);

@@ -444,7 +444,7 @@ private:
         const int _maskZ;      ///<
         const int _turnZ;      ///<
         const int _stallZ;     ///<
-        const int _overSpeedZ; ///<
+        const int _overspeedZ; ///<
 
         void reset();
 

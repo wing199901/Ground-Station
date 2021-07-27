@@ -33,6 +33,8 @@ private slots:
 
     void on_actionPause_toggled(bool arg1);
 
+    void on_actionReset_triggered();
+
 private:
     Ui::MainWindow *ui;
     int timerId;
