@@ -414,6 +414,7 @@ qfi_EADI::ADI::ADI(QGraphicsScene *scene)
     , _itemFD(Q_NULLPTR)
     , _itemStall(Q_NULLPTR)
     , _itemOverspeed(Q_NULLPTR)
+    , _itemPause(Q_NULLPTR)
     , _itemMask(Q_NULLPTR)
     , _itemScaleH(Q_NULLPTR)
     , _itemScaleV(Q_NULLPTR)
@@ -443,7 +444,8 @@ qfi_EADI::ADI::ADI(QGraphicsScene *scene)
     ,
 
     _stall(false)
-    , _overSpeed(false)
+    , _overspeed(false)
+    , _pause(false)
     ,
 
     _laddDeltaX_new(0.0)
@@ -501,6 +503,7 @@ qfi_EADI::ADI::ADI(QGraphicsScene *scene)
     , _originalFdPos(107.0, 124.5)
     , _originalStallPos(122.0, 91.0)
     , _originalOverspeedPos(95.0, 91.0)
+    , _originalPausePos(122.0, 91.0)
     , _originalScaleHPos(0.0, 0.0)
     , _originalScaleVPos(0.0, 0.0)
     , _originalFpmPos(135.0, 113.0)
@@ -518,6 +521,7 @@ qfi_EADI::ADI::ADI(QGraphicsScene *scene)
     , _turnZ(70)
     , _stallZ(80)
     , _overspeedZ(80)
+    , _pauseZ(80)
 {
     reset();
 }
@@ -606,6 +610,13 @@ void qfi_EADI::ADI::init(double scaleX, double scaleY)
     _itemOverspeed->moveBy(_scaleX * _originalOverspeedPos.x(), _scaleY * _originalOverspeedPos.y());
     _scene->addItem(_itemOverspeed);
 
+    _itemPause = new QGraphicsSvgItem(":/qfi/images/eadi/eadi_adi_pause.svg");
+    _itemPause->setCacheMode(QGraphicsItem::NoCache);
+    _itemPause->setZValue(_pauseZ);
+    _itemPause->setTransform(QTransform::fromScale(_scaleX, _scaleY), true);
+    _itemPause->moveBy(_scaleX * _originalPausePos.x(), _scaleY * _originalPausePos.y());
+    _scene->addItem(_itemPause);
+
     _itemScaleH = new QGraphicsSvgItem(":/qfi/images/eadi/eadi_adi_scaleh.svg");
     _itemScaleH->setCacheMode(QGraphicsItem::NoCache);
     _itemScaleH->setZValue(_scalesZ);
@@ -670,6 +681,7 @@ void qfi_EADI::ADI::update(double scaleX, double scaleY)
     updateFD(sinRoll, cosRoll);
     updateStall();
     updateOverspeed();
+    updatePause();
     updateFPM();
 
     _laddDeltaX_old = _laddDeltaX_new;
@@ -821,9 +833,14 @@ void qfi_EADI::ADI::setStall(bool stall)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void qfi_EADI::ADI::setOverspeed(bool overSpeed)
+void qfi_EADI::ADI::setOverspeed(bool overspeed)
 {
-    _overSpeed = overSpeed;
+    _overspeed = overspeed;
+}
+
+void qfi_EADI::ADI::setPause(bool pause)
+{
+    _pause = pause;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -863,7 +880,8 @@ void qfi_EADI::ADI::reset()
     _fdVisible = false;
 
     _stall = false;
-    _overSpeed = false;
+    _overspeed = false;
+    _pause = false;
 
     _laddDeltaX_new = 0.0;
     _laddDeltaX_old = 0.0;
@@ -1054,13 +1072,27 @@ void qfi_EADI::ADI::updateStall()
 
 void qfi_EADI::ADI::updateOverspeed()
 {
-    if (_overSpeed)
+    if (_overspeed)
     {
         _itemOverspeed->setVisible(true);
     }
     else
     {
         _itemOverspeed->setVisible(false);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void qfi_EADI::ADI::updatePause()
+{
+    if (_pause)
+    {
+        _itemPause->setVisible(true);
+    }
+    else
+    {
+        _itemPause->setVisible(false);
     }
 }
 

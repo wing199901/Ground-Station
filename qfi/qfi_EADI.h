@@ -188,6 +188,12 @@ public:
         _adi->setOverspeed(overspeed);
     }
 
+    /** @param pause flag */
+    inline void setPause(bool pause)
+    {
+        _adi->setPause(pause);
+    }
+
     /** @param altitude (dimensionless numeric value) */
     inline void setAltitude(double altitude)
     {
@@ -335,26 +341,28 @@ private:
         void setDots(double dotH, double dotV, bool visibleH, bool visibleV);
         void setFD(double roll, double pitch, bool visible = true);
         void setStall(bool stall);
-        void setOverspeed(bool overSpeed);
+        void setOverspeed(bool overspeed);
+        void setPause(bool pause);
 
     private:
         QGraphicsScene *_scene; ///< graphics scene
 
-        QGraphicsSvgItem *_itemBack;  ///< background
-        QGraphicsSvgItem *_itemLadd;  ///< pitch ladder
-        QGraphicsSvgItem *_itemRoll;  ///< roll mask
-        QGraphicsSvgItem *_itemSlip;  ///< slip indicator
-        QGraphicsSvgItem *_itemTurn;  ///< turn rate indicator
-        QGraphicsSvgItem *_itemDotH;  ///<
-        QGraphicsSvgItem *_itemDotV;  ///<
-        QGraphicsSvgItem *_itemFD;    ///< flight director
-        QGraphicsSvgItem *_itemStall; ///< stall warning
-        QGraphicsSvgItem *_itemOverspeed;
-        QGraphicsSvgItem *_itemMask;   ///< adi mask
-        QGraphicsSvgItem *_itemScaleH; ///<
-        QGraphicsSvgItem *_itemScaleV; ///<
-        QGraphicsSvgItem *_itemFPM;    ///< flight path marker
-        QGraphicsSvgItem *_itemFPMX;   ///< flight path marker cross
+        QGraphicsSvgItem *_itemBack;      ///< background
+        QGraphicsSvgItem *_itemLadd;      ///< pitch ladder
+        QGraphicsSvgItem *_itemRoll;      ///< roll mask
+        QGraphicsSvgItem *_itemSlip;      ///< slip indicator
+        QGraphicsSvgItem *_itemTurn;      ///< turn rate indicator
+        QGraphicsSvgItem *_itemDotH;      ///<
+        QGraphicsSvgItem *_itemDotV;      ///<
+        QGraphicsSvgItem *_itemFD;        ///< flight director
+        QGraphicsSvgItem *_itemStall;     ///< stall warning
+        QGraphicsSvgItem *_itemOverspeed; ///< overspeed warning
+        QGraphicsSvgItem *_itemPause;     ///< pause warning
+        QGraphicsSvgItem *_itemMask;      ///< adi mask
+        QGraphicsSvgItem *_itemScaleH;    ///<
+        QGraphicsSvgItem *_itemScaleV;    ///<
+        QGraphicsSvgItem *_itemFPM;       ///< flight path marker
+        QGraphicsSvgItem *_itemFPMX;      ///< flight path marker cross
 
         double _roll;          ///< [deg]
         double _pitch;         ///< [deg]
@@ -374,8 +382,9 @@ private:
         bool _dotVisibleV; ///<
         bool _fdVisible;   ///<
 
-        bool _stall; ///<
-        bool _overSpeed;
+        bool _stall;     ///<
+        bool _overspeed; ///<
+        bool _pause;     ///<
 
         double _laddDeltaX_new;     ///<
         double _laddDeltaX_old;     ///<
@@ -429,6 +438,7 @@ private:
         QPointF _originalFdPos;        ///<
         QPointF _originalStallPos;     ///<
         QPointF _originalOverspeedPos; ///<
+        QPointF _originalPausePos;     ///<
         QPointF _originalScaleHPos;    ///<
         QPointF _originalScaleVPos;    ///<
         QPointF _originalFpmPos;       ///<
@@ -445,6 +455,7 @@ private:
         const int _turnZ;      ///<
         const int _stallZ;     ///<
         const int _overspeedZ; ///<
+        const int _pauseZ;     ///<
 
         void reset();
 
@@ -457,6 +468,7 @@ private:
         void updateFD(double sinRoll, double cosRoll);
         void updateStall();
         void updateOverspeed();
+        void updatePause();
         void updateFPM();
     };
 

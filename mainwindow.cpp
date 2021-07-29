@@ -151,4 +151,6 @@ void MainWindow::on_actionReset_triggered()
     QByteArray data = doc.toJson();
 
     m_client->publish(QMqttTopicName("/Sensors/ModelA/Command"), data, 2, false);
+
+    ui->actionPause->setChecked(false);
 }
