@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 
+#include <QGeoCoordinate>
 #include <QQmlContext>
+#include <QQuickItem>
 #include <QQuickWidget>
 #include <QThread>
 #include <QtCore>
@@ -8,7 +10,6 @@
 #include <QtWidgets>
 
 #include "ui_mainwindow.h"
-
 //#include <QtMqtt/QMqttClient>
 #include "qmqttclient.h"
 
@@ -27,10 +28,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->menubar->setNativeMenuBar(true);
     timerId = startTimer(50);
 
-    ui->quickWidget->rootContext()->setContextProperty("longitude", 22.3035);
-    ui->quickWidget->rootContext()->setContextProperty("latitude", 114.2021);
-    ui->quickWidget->setSource(QUrl("qrc:/qmlMap.qml"));
-    ui->quickWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
+    QQuickWidget *widget = ui->quickWidget;
+    widget->setSource(QUrl("qrc:/qmlMap.qml"));
+    //ui->quickWidget->setSource(QUrl("qrc:/qmlMap.qml"));
+    //ui->quickWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
 
     m_client = new QMqttClient(this);
     //m_client->setHostname("aerosimmqtt.eastasia.azurecontainer.io");
@@ -39,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_client, &QMqttClient::stateChanged, this,
             &MainWindow::updateLogStateChange);
+
     connect(m_client, &QMqttClient::disconnected, this,
             &MainWindow::brokerDisconnected);
 
@@ -64,16 +66,23 @@ MainWindow::MainWindow(QWidget *parent)
                 ui->graphicsEADI->setHeadingSel(json["headingSel"].toDouble());
                 ui->graphicsEADI->setMachNo(json["mach"].toDouble());
                 ui->graphicsEADI->setOverspeed(json["overspeed"].toBool() || json["ias"].toDouble() > 255);
+                ui->graphicsEADI->setPause(json["pause"].toBool());
                 ui->graphicsEADI->setPitch(json["pitch"].toDouble());
                 ui->graphicsEADI->setPressure(json["pressure"].toDouble(), qfi_EADI::PressureMode::MB);
                 ui->graphicsEADI->setRoll(json["roll"].toDouble());
                 ui->graphicsEADI->setSlipSkid(json["slipskid"].toDouble());
                 ui->graphicsEADI->setStall(json["stall"].toBool());
                 ui->graphicsEADI->setTurnRate(json["turnRate"].toDouble() / 1024);
-                //ui->quickWidget->rootContext()->setContextProperty("longitude", json["longitude"].toDouble());
-                //ui->quickWidget->rootContext()->setContextProperty("latitude", json["latitude"].toDouble());
 
-                qDebug() << json["pause"].toBool();
+                QObject *plane = ui->quickWidget->rootObject()->findChild<QObject *>("qmlPlane1");
+                if (plane)
+                {
+                    plane->setProperty("heading", json["heading"].toDouble());
+                    plane->setProperty("latitude", json["latitude"].toDouble());
+                    plane->setProperty("longitude", json["longitude"].toDouble());
+                    plane->setProperty("pilotName", json["name"].toString());
+                }
+
                 qDebug() << json["longitude"].toDouble();
                 qDebug() << json["latitude"].toDouble();
             });
@@ -144,7 +153,7 @@ void MainWindow::on_actionPause_toggled(bool arg1)
 void MainWindow::on_actionReset_triggered()
 {
     QJsonObject obj;
-    obj.insert("pause", QJsonValue::Type::Null);
+    obj.insert("pause", false);
     obj.insert("reset", true);
 
     QJsonDocument doc(obj);
