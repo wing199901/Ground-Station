@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1280</width>
-    <height>800</height>
+    <width>1600</width>
+    <height>1000</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>1280</width>
-    <height>800</height>
+    <width>1600</width>
+    <height>1000</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -113,6 +113,19 @@
     <item>
      <widget class="QWidget" name="widget_2" native="true">
       <layout class="QGridLayout" name="gridLayout_2">
+       <item row="2" column="2">
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>112</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
        <item row="0" column="1">
         <spacer name="verticalSpacer_4">
          <property name="orientation">
@@ -122,6 +135,19 @@
           <size>
            <width>20</width>
            <height>113</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="3">
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>19</width>
+           <height>20</height>
           </size>
          </property>
         </spacer>
@@ -140,7 +166,7 @@
         </spacer>
        </item>
        <item row="1" column="1" colspan="2">
-        <widget class="QQuickWidget" name="quickWidget">
+        <widget class="QQuickWidget" name="qmlMap">
          <property name="minimumSize">
           <size>
            <width>500</width>
@@ -158,21 +184,14 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="3">
-        <spacer name="horizontalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>19</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="widget_3" native="true">
+      <layout class="QGridLayout" name="gridLayout_3">
        <item row="2" column="2">
-        <spacer name="verticalSpacer_3">
+        <spacer name="verticalSpacer_5">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -184,6 +203,64 @@
          </property>
         </spacer>
        </item>
+       <item row="0" column="1">
+        <spacer name="verticalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>113</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="3">
+        <spacer name="horizontalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>19</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="0">
+        <spacer name="horizontalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>19</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="1" colspan="2">
+        <widget class="QQuickWidget" name="qmlGauge">
+         <property name="minimumSize">
+          <size>
+           <width>500</width>
+           <height>500</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>500</width>
+           <height>500</height>
+          </size>
+         </property>
+         <property name="resizeMode">
+          <enum>QQuickWidget::SizeRootObjectToView</enum>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -194,7 +271,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1280</width>
+     <width>1600</width>
      <height>21</height>
     </rect>
    </property>

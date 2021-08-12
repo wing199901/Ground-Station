@@ -3,5 +3,7 @@
         <file>qmlMap.qml</file>
         <file>airplane.png</file>
         <file>Plane.qml</file>
+        <file>qmlGauge.qml</file>
+        <file>DashboardGaugeStyle.qml</file>
     </qresource>
 </RCC>

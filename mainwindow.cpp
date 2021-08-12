@@ -28,10 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->menubar->setNativeMenuBar(true);
     timerId = startTimer(50);
 
-    QQuickWidget *widget = ui->quickWidget;
-    widget->setSource(QUrl("qrc:/qmlMap.qml"));
-    //ui->quickWidget->setSource(QUrl("qrc:/qmlMap.qml"));
-    //ui->quickWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
+    ui->qmlMap->setSource(QUrl("qrc:/qmlMap.qml"));
+    ui->qmlGauge->setSource(QUrl("qrc:/qmlGauge.qml"));
 
     m_client = new QMqttClient(this);
     //m_client->setHostname("aerosimmqtt.eastasia.azurecontainer.io");
@@ -74,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent)
                 ui->graphicsEADI->setStall(json["stall"].toBool());
                 ui->graphicsEADI->setTurnRate(json["turnRate"].toDouble() / 1024);
 
-                QObject *plane = ui->quickWidget->rootObject()->findChild<QObject *>("qmlPlane1");
+                QObject *plane = ui->qmlMap->rootObject()->findChild<QObject *>("qmlPlane1");
                 if (plane)
                 {
                     plane->setProperty("heading", json["heading"].toDouble());
@@ -83,8 +81,26 @@ MainWindow::MainWindow(QWidget *parent)
                     plane->setProperty("pilotName", json["name"].toString());
                 }
 
-                qDebug() << json["longitude"].toDouble();
-                qDebug() << json["latitude"].toDouble();
+                QJsonValue eng1Value = json.value("eng1");
+                QJsonObject eng1 = eng1Value.toObject();
+
+                QObject *throttleMeter = ui->qmlGauge->rootObject()->findChild<QObject *>("throttleMeter");
+                if (throttleMeter)
+                {
+                    throttleMeter->setProperty("throttleLever", eng1["throttleLever"].toDouble());
+                }
+
+                QObject *propellerMeter = ui->qmlGauge->rootObject()->findChild<QObject *>("propellerMeter");
+                if (propellerMeter)
+                {
+                    propellerMeter->setProperty("propellerLever", eng1["propellerLever"].toDouble());
+                }
+
+                QObject *mixtureMeter = ui->qmlGauge->rootObject()->findChild<QObject *>("mixtureMeter");
+                if (mixtureMeter)
+                {
+                    mixtureMeter->setProperty("mixtureLever", eng1["mixtureLever"].toDouble());
+                }
             });
 
     Sleeper::sleep(1);

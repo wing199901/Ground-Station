@@ -13,7 +13,7 @@ from paho.mqtt import client as mqtt
 
 def payload():
     with FSUIPC() as fsuipc:
-        pause, pitot, ias, vertical_speed, compass, stall, overspeed, slip_skid, turn_rate, latitude, longitude,  pitch, roll, heading, heading_sel, altitude_sel, airspeed_sel, pressure, mach, angle_of_attack, side_slip,  altitude = prepared.read()
+        pause, pitot, ias, vertical_speed, compass, stall, overspeed, slip_skid, turn_rate, latitude, longitude,  pitch, roll, heading, heading_sel, altitude_sel, airspeed_sel, eng1_thro_lever, eng1_prop_lever, eng1_mix_lever, pressure, mach, angle_of_attack, side_slip,  altitude = prepared.read()
 
         print(f"Pause: {pause}")
         print(f"Pitot: {pitot}")
@@ -32,6 +32,9 @@ def payload():
         print(f"HeadingSel: {heading_sel}")
         print(f"AltitudeSel: {altitude_sel}")
         print(f"AirspeedSel: {airspeed_sel}")
+        print(f"Eng1 Throttle Lever: {eng1_thro_lever}")
+        print(f"Eng1 Propellor Lever: {eng1_prop_lever}")
+        print(f"Eng1 Mixture Lever: {eng1_mix_lever}")
         print(f"Pressure: {pressure}")
         print(f"Mach: {mach}")
         print(f"Angle of Attack: {angle_of_attack}")
@@ -58,6 +61,11 @@ def payload():
             'headingSel': heading_sel / 65536 * 360,
             'altitudeSel': altitude_sel / 65536 * 3.281,
             'airspeedSel': airspeed_sel,
+            'eng1': {
+                'throttleLever': eng1_thro_lever / 16384 * 100,
+                'propellerLever': eng1_prop_lever / 16384 * 100,
+                'mixtureLever': eng1_mix_lever / 16384 * 100
+            },
             'pressure': pressure / 16,
             'mach': mach / 20480,
             'aoa': math.degrees(angle_of_attack),
@@ -137,6 +145,9 @@ if __name__ == "__main__":
             (0x7CC, "d"),  # Heading Sel
             (0x7D4, "d"),  # Altitude Sel
             (0x7E2, "d"),  # Airspeed Sel
+            (0x88C, "h"),  # Engine 1 Throttle lever
+            (0x88E, "h"),  # Engine 1 Propeller lever
+            (0x890, "h"),  # Engine 1 Mixture lever
             (0xEC6, "d"),  # Pressure
             (0x11C6, "d"),  # Mach
             (0x2ED0, "f"),  # Angle of Attack
