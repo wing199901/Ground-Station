@@ -1,3 +1,4 @@
+import QtQml 2.2
 import QtQuick 2.4
 import QtQuick.Controls 2.2
 import QtLocation 5.9
@@ -6,7 +7,6 @@ import QtPositioning 5.12
 Item {
     width: 500
     height: 500
-    visible: true
 
     Map {
         id: map

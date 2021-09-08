@@ -11,6 +11,7 @@
 
 #include "ui_mainwindow.h"
 //#include <QtMqtt/QMqttClient>
+
 #include "qmqttclient.h"
 
 class Sleeper : public QThread
@@ -28,12 +29,17 @@ MainWindow::MainWindow(QWidget *parent)
     ui->menubar->setNativeMenuBar(true);
     timerId = startTimer(50);
 
-    ui->qmlMap->setSource(QUrl("qrc:/qmlMap.qml"));
-    ui->qmlGauge->setSource(QUrl("qrc:/qmlGauge.qml"));
+    ui->qmlMap->setSource(QUrl("qrc:/qml/qmlMap.qml"));
+
+    auto gauge = ui->qmlGauge;
+    gauge->setAttribute(Qt::WA_AlwaysStackOnTop);
+    gauge->setAttribute(Qt::WA_TranslucentBackground);
+    gauge->setClearColor(Qt::transparent);
+    gauge->setSource(QUrl("qrc:/qml/qmlGauge.qml"));
 
     m_client = new QMqttClient(this);
     //m_client->setHostname("aerosimmqtt.eastasia.azurecontainer.io");
-    m_client->setHostname("192.168.0.129");
+    m_client->setHostname("192.168.0.128");
     m_client->setPort(1883);
 
     connect(m_client, &QMqttClient::stateChanged, this,
@@ -54,6 +60,10 @@ MainWindow::MainWindow(QWidget *parent)
 
                 QJsonDocument doc = QJsonDocument::fromJson(message);
                 QJsonObject json = doc.object();
+
+                //Engine 1
+                QJsonValue eng1Value = json.value("eng1");
+                QJsonObject eng1 = eng1Value.toObject();
 
                 ui->graphicsEADI->setAirspeed(json["ias"].toDouble());
                 ui->graphicsEADI->setAirspeedSel(json["airspeedSel"].toDouble());
@@ -81,9 +91,6 @@ MainWindow::MainWindow(QWidget *parent)
                     plane->setProperty("pilotName", json["name"].toString());
                 }
 
-                QJsonValue eng1Value = json.value("eng1");
-                QJsonObject eng1 = eng1Value.toObject();
-
                 QObject *throttleMeter = ui->qmlGauge->rootObject()->findChild<QObject *>("throttleMeter");
                 if (throttleMeter)
                 {
@@ -100,6 +107,37 @@ MainWindow::MainWindow(QWidget *parent)
                 if (mixtureMeter)
                 {
                     mixtureMeter->setProperty("mixtureLever", eng1["mixtureLever"].toDouble());
+                }
+
+                QObject *fuelWeight = ui->qmlGauge->rootObject()->findChild<QObject *>("fuelWeight");
+                fuelWeight->setProperty("fuelWeight", json["fuelWeight"].toDouble());
+
+                QObject *flaps = ui->qmlGauge->rootObject()->findChild<QObject *>("flaps");
+                flaps->setProperty("flaps", json["flaps"].toDouble());
+
+                QObject *elevatorTrim = ui->qmlGauge->rootObject()->findChild<QObject *>("elevatorTrim");
+                elevatorTrim->setProperty("elevatorTrim", json["elevatorTrim"].toDouble());
+
+                QVariant memoCount;
+                QMetaObject::invokeMethod(
+                    ui->qmlGauge->rootObject(),
+                    "countMemo",
+                    Q_RETURN_ARG(QVariant, memoCount));
+
+                for (int i = 0; i < memoCount.toInt(); i++)
+                {
+                    QVariant key;
+                    QMetaObject::invokeMethod(
+                        ui->qmlGauge->rootObject(),
+                        "getJsonKey",
+                        Q_RETURN_ARG(QVariant, key),
+                        Q_ARG(QVariant, QVariant::fromValue(i)));
+
+                    QMetaObject::invokeMethod(
+                        ui->qmlGauge->rootObject(),
+                        "setVisible",
+                        Q_ARG(QVariant, QVariant::fromValue(i)),
+                        Q_ARG(QVariant, QVariant::fromValue(json[key.toString()].toBool())));
                 }
             });
 

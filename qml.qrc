@@ -1,9 +1,15 @@
 <RCC>
     <qresource prefix="/">
-        <file>qmlMap.qml</file>
-        <file>airplane.png</file>
-        <file>Plane.qml</file>
-        <file>qmlGauge.qml</file>
-        <file>DashboardGaugeStyle.qml</file>
+        <file>image/airplane.png</file>
+        <file>qml/qmlGauge.qml</file>
+        <file>qml/qmlMap.qml</file>
+        <file>qml/Plane.qml</file>
+        <file>qml/QuadrantIndicatorStyle.qml</file>
+        <file>image/ecam_background.svg</file>
+        <file>qml/WarningModel.qml</file>
+        <file>qml/MemoModel.qml</file>
+        <file>ECAMStyles/Colors.qml</file>
+        <file>ECAMStyles/qmldir</file>
+        <file>qml/speedGauge.qml</file>
     </qresource>
 </RCC>

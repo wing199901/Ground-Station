@@ -18,6 +18,8 @@ CircularGaugeStyle {
     property bool halfGauge: false
     property string label
 
+    readonly property int value: control.value
+
     function toPixels(percentage) {
         return percentage * outerRadius
     }
@@ -62,13 +64,11 @@ CircularGaugeStyle {
             font.family: "B612"
             font.pixelSize: toPixels(0.3)
             text: value + "%"
-            color: "green"
+            color: value > 10 ? "green" : "red"
             horizontalAlignment: Text.AlignRight
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.verticalCenter
             anchors.topMargin: toPixels(0.15)
-
-            readonly property int value: control.value
         }
         Text {
             text: label
@@ -88,7 +88,6 @@ CircularGaugeStyle {
     }
 
     minorTickmark: Rectangle {
-
         /*
         implicitWidth: outerRadius * 0.03
         implicitHeight: outerRadius * 0.1
@@ -115,6 +114,9 @@ CircularGaugeStyle {
         property real xCenter: width / 2
         property real yCenter: height / 2
 
+        property color fillColor: value > 10 ? "green" : "red"
+        onFillColorChanged: requestPaint()
+
         onPaint: {
             var ctx = getContext("2d")
             ctx.reset()
@@ -127,7 +129,7 @@ CircularGaugeStyle {
             ctx.lineTo(xCenter, yCenter - needleLength)
             ctx.lineTo(xCenter, 0)
             ctx.closePath()
-            ctx.fillStyle = Qt.rgba(0, 1, 0, 0.66)
+            ctx.fillStyle = fillColor
             ctx.fill()
 
             ctx.beginPath()
@@ -136,7 +138,7 @@ CircularGaugeStyle {
             ctx.lineTo(xCenter + needleTipWidth / 2, 0)
             ctx.lineTo(xCenter, 0)
             ctx.closePath()
-            ctx.fillStyle = Qt.lighter(Qt.rgba(0, 1, 0, 0.66))
+            ctx.fillStyle = Qt.lighter(fillColor)
             ctx.fill()
         }
     }

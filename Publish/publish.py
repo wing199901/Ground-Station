@@ -13,33 +13,40 @@ from paho.mqtt import client as mqtt
 
 def payload():
     with FSUIPC() as fsuipc:
-        pause, pitot, ias, vertical_speed, compass, stall, overspeed, slip_skid, turn_rate, latitude, longitude,  pitch, roll, heading, heading_sel, altitude_sel, airspeed_sel, eng1_thro_lever, eng1_prop_lever, eng1_mix_lever, pressure, mach, angle_of_attack, side_slip,  altitude = prepared.read()
+        pause, pitot, ias, vertical_speed, compass, stall, overspeed, slip_skid, turn_rate, latitude, longitude,  pitch, roll, heading, heading_sel, altitude_sel, airspeed_sel, eng1_thro_lever, eng1_prop_lever, eng1_mix_lever, elevator_trim, parking_brake, landing_gear, flaps, pressure, mach, fuel_weight, angle_of_attack, side_slip, alternator, battery, avionics, fuel_pump, altitude = prepared.read()
 
-        print(f"Pause: {pause}")
-        print(f"Pitot: {pitot}")
-        print(f"IAS: {ias}")
-        print(f"Vertical Speed: {vertical_speed}")
-        print(f"Compass: {compass}")
-        print(f"Stall: {stall}")
-        print(f"Overspeed: {overspeed}")
-        print(f"Slip Skid: {slip_skid}")
-        print(f"Turn Rate: {turn_rate}")
-        print(f"Latitude: {latitude}")
-        print(f"Longitude: {longitude}")
-        print(f"Pitch: {pitch}")
-        print(f"Roll: {roll}")
-        print(f"Heading: {heading}")
-        print(f"HeadingSel: {heading_sel}")
-        print(f"AltitudeSel: {altitude_sel}")
-        print(f"AirspeedSel: {airspeed_sel}")
-        print(f"Eng1 Throttle Lever: {eng1_thro_lever}")
-        print(f"Eng1 Propellor Lever: {eng1_prop_lever}")
-        print(f"Eng1 Mixture Lever: {eng1_mix_lever}")
-        print(f"Pressure: {pressure}")
-        print(f"Mach: {mach}")
-        print(f"Angle of Attack: {angle_of_attack}")
-        print(f"Side Slip: {side_slip}")
-        print(f"Altitude: {altitude}")
+        # print(f"Pause: {pause}")
+        # print(f"Pitot: {pitot}")
+        # print(f"IAS: {ias}")
+        # print(f"Vertical Speed: {vertical_speed}")
+        # print(f"Compass: {compass}")
+        # print(f"Stall: {stall}")
+        # print(f"Overspeed: {overspeed}")
+        # print(f"Slip Skid: {slip_skid}")
+        # print(f"Turn Rate: {turn_rate}")
+        # print(f"Latitude: {latitude}")
+        # print(f"Longitude: {longitude}")
+        # print(f"Pitch: {pitch}")
+        # print(f"Roll: {roll}")
+        # print(f"Heading: {heading}")
+        # print(f"HeadingSel: {heading_sel}")
+        # print(f"AltitudeSel: {altitude_sel}")
+        # print(f"AirspeedSel: {airspeed_sel}")
+        # print(f"Eng1 Throttle Lever: {eng1_thro_lever}")
+        # print(f"Eng1 Propellor Lever: {eng1_prop_lever}")
+        # print(f"Eng1 Mixture Lever: {eng1_mix_lever}")
+        # print(f"Parking Brake: {parking_brake}")
+        # print(f"Landing Gear: {landing_gear}")
+        # print(f"Flaps: {flaps}")
+        # print(f"Pressure: {pressure}")
+        # print(f"Mach: {mach}")
+        # print(f"Angle of Attack: {angle_of_attack}")
+        # print(f"Side Slip: {side_slip}")
+        # print(f"Alternator: {alternator}")
+        # print(f"Battery: {battery}")
+        # print(f"Avionics Master: {avionics}")
+        # print(f"Fuel Pump: {fuel_pump}")
+        # print(f"Altitude: {altitude}")
 
         payload = {
             'name': socket.gethostname(),
@@ -64,14 +71,25 @@ def payload():
             'eng1': {
                 'throttleLever': eng1_thro_lever / 16384 * 100,
                 'propellerLever': eng1_prop_lever / 16384 * 100,
-                'mixtureLever': eng1_mix_lever / 16384 * 100
+                'mixtureLever': eng1_mix_lever / 16384 * 100,
             },
+            'elevatorTrim': elevator_trim / 16384 * 100,
+            'parkingBrake': bool(parking_brake),
+            'landingGear': bool(landing_gear),
+            'flaps': flaps,
             'pressure': pressure / 16,
             'mach': mach / 20480,
+            'fuelWeight': fuel_weight / 2.205,
             'aoa': math.degrees(angle_of_attack),
             'sideSlip': math.degrees(side_slip),
+            'alternator': bool(alternator),
+            'battery': bool(battery),
+            'avionics': bool(avionics),
+            'fuelPump': bool(fuel_pump),
             'altitude': altitude,
         }
+
+        print(payload)
 
     return payload
 
@@ -124,7 +142,7 @@ if __name__ == "__main__":
 
     # Connect to the Broker
     # client.connect('aerosimmqtt.eastasia.azurecontainer.io', 1883, 60)
-    client.connect('192.168.0.129', 1883, 60)
+    client.connect('192.168.0.128', 1883, 60)
 
     with FSUIPC() as fsuipc:
         prepared = fsuipc.prepare_data([
@@ -148,10 +166,19 @@ if __name__ == "__main__":
             (0x88C, "h"),  # Engine 1 Throttle lever
             (0x88E, "h"),  # Engine 1 Propeller lever
             (0x890, "h"),  # Engine 1 Mixture lever
+            (0xBC0, "h"),  # Elevator Trim
+            (0xBC8, "h"),  # Parking Brake
+            (0xBE8, "d"),  # Landing Gear
+            (0xBFC, "c"),  # Flaps
             (0xEC6, "d"),  # Pressure
             (0x11C6, "d"),  # Mach
+            (0x126C, "d"),  # Fuel Weight
             (0x2ED0, "f"),  # Angle of Attack
             (0x2ED8, "f"),  # Side Slip Angle
+            (0x3101, "c"),  # Alternator
+            (0x3102, "c"),  # Battery
+            (0x3103, "c"),  # Avionics Master
+            (0x3104, "c"),  # Fuel Pump
             (0x3324, "d"),  # Altitude
         ], True)
 
