@@ -32,9 +32,6 @@ private slots:
     void on_actionSubscript_triggered();
     void on_actionPause_toggled(bool arg1);
     void on_actionReset_triggered();
-    void on_actionTest_triggered();
-
-    bool repeatedTopic(QString topic);
 
 private:
     Ui::MainWindow *ui;

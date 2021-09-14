@@ -9,7 +9,7 @@ from time import sleep
 
 from fsuipc import FSUIPC
 from paho.mqtt import client as mqtt
-
+hostname = socket.gethostname()
 
 def payload():
     with FSUIPC() as fsuipc:
@@ -49,7 +49,7 @@ def payload():
         # print(f"Altitude: {altitude}")
 
         payload = {
-            'name': socket.gethostname(),
+            'name': hostname,
             'time': datetime.datetime.now().strftime('%m/%d %H:%M:%S'),
             'pause': bool(pause),
             'pitot': bool(pitot),
@@ -96,7 +96,7 @@ def payload():
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
-    client.subscribe("/Sensors/ModelA/Command", qos=2)
+    client.subscribe("f/Devices/{hostname}/Command", qos=2)
 
 
 def on_message(client, userdata, msg):
@@ -183,5 +183,5 @@ if __name__ == "__main__":
         ], True)
 
     while True:
-        client.publish("/Sensors/ModelA", json.dumps(payload()))
+        client.publish(f"/Devices/{hostname}", json.dumps(payload()))
         client.loop()
