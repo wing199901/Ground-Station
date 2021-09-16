@@ -43,69 +43,8 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="deviceTabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>-1</number>
       </property>
-      <widget class="QWidget" name="tab">
-       <attribute name="title">
-        <string>Tab 1</string>
-       </attribute>
-       <widget class="qfi_EADI" name="graphicsEADI">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>35</x>
-          <y>238</y>
-          <width>500</width>
-          <height>500</height>
-         </rect>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>500</width>
-          <height>500</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>500</width>
-          <height>500</height>
-         </size>
-        </property>
-        <property name="verticalScrollBarPolicy">
-         <enum>Qt::ScrollBarAlwaysOff</enum>
-        </property>
-        <property name="horizontalScrollBarPolicy">
-         <enum>Qt::ScrollBarAlwaysOff</enum>
-        </property>
-       </widget>
-       <widget class="QQuickWidget" name="qmlGauge">
-        <property name="geometry">
-         <rect>
-          <x>567</x>
-          <y>213</y>
-          <width>550</width>
-          <height>550</height>
-         </rect>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>550</width>
-          <height>550</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>550</width>
-          <height>550</height>
-         </size>
-        </property>
-        <property name="resizeMode">
-         <enum>QQuickWidget::SizeRootObjectToView</enum>
-        </property>
-       </widget>
-      </widget>
      </widget>
     </item>
    </layout>
@@ -176,11 +115,6 @@
    <class>QQuickWidget</class>
    <extends>QWidget</extends>
    <header location="global">QtQuickWidgets/QQuickWidget</header>
-  </customwidget>
-  <customwidget>
-   <class>qfi_EADI</class>
-   <extends>QGraphicsView</extends>
-   <header>qfi/qfi_EADI.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

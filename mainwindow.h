@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QJsonObject>
 #include <QMainWindow>
 
 //#include <QtMqtt/QMqttClient>
@@ -21,8 +22,10 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-protected:
-    void timerEvent(QTimerEvent *event);
+    void emitSendJson(QJsonObject);
+
+    //protected:
+    //    void timerEvent(QTimerEvent *event);
 
 private slots:
     void updateLogStateChange();
@@ -36,10 +39,14 @@ private slots:
 
     bool repeatedTopic(QString topic);
 
+signals:
+    void sendJson(QJsonObject);
+
 private:
     Ui::MainWindow *ui;
-    int timerId;
+    //    int timerId;
     QMqttClient *m_client;
-    QMqttTopicFilter topic;
+    //    QMqttTopicFilter *topic;
+    //    QString *newTabObjectName;
 };
 #endif // MAINWINDOW_H

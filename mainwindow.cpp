@@ -16,31 +16,31 @@
 
 #include "qmqttclient.h"
 
-class Sleeper : public QThread
-{
-public:
-    static void usleep(unsigned long usecs) { QThread::usleep(usecs); }
-    static void msleep(unsigned long msecs) { QThread::msleep(msecs); }
-    static void sleep(unsigned long secs) { QThread::sleep(secs); }
-};
+//class Sleeper : public QThread
+//{
+//public:
+//    static void usleep(unsigned long usecs) { QThread::usleep(usecs); }
+//    static void msleep(unsigned long msecs) { QThread::msleep(msecs); }
+//    static void sleep(unsigned long secs) { QThread::sleep(secs); }
+//};
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), timerId(0)
+    : QMainWindow(parent), ui(new Ui::MainWindow) /*, timerId(0)*/
 {
     ui->setupUi(this);
     ui->menubar->setNativeMenuBar(true);
-    timerId = startTimer(50);
+    //    timerId = startTimer(50);
 
-    auto gauge = ui->qmlGauge;
-    gauge->setAttribute(Qt::WA_AlwaysStackOnTop);
-    gauge->setAttribute(Qt::WA_TranslucentBackground);
-    gauge->setClearColor(Qt::transparent);
-    gauge->setSource(QUrl("qrc:/qml/qmlGauge.qml"));
+    //    auto gauge = ui->qmlGauge;
+    //    gauge->setAttribute(Qt::WA_AlwaysStackOnTop);
+    //    gauge->setAttribute(Qt::WA_TranslucentBackground);
+    //    gauge->setClearColor(Qt::transparent);
+    //    gauge->setSource(QUrl("qrc:/qml/qmlGauge.qml"));
 
     ui->qmlMap->setSource(QUrl("qrc:/qml/qmlMap.qml"));
 
     m_client = new QMqttClient(this);
-    //m_client->setHostname("aerosimmqtt.eastasia.azurecontainer.io");
+    //    m_client->setHostname("aerosimmqtt.eastasia.azurecontainer.io");
     m_client->setHostname("192.168.0.128");
     m_client->setPort(1883);
 
@@ -52,27 +52,31 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_client, &QMqttClient::messageReceived, this, [this](const QByteArray &message, const QMqttTopicName &topic)
             {
-                const QString content = QDateTime::currentDateTime().toString() +
-                                        QLatin1String(" Received Topic: ") +
-                                        topic.name() + QLatin1String(" Message: ") +
-                                        message + QLatin1Char('\n');
+                //                const QString content = QDateTime::currentDateTime().toString() +
+                //                                        QLatin1String(" Received Topic: ") +
+                //                                        topic.name() + QLatin1String(" Message: ") +
+                //                                        message + QLatin1Char('\n');
 
                 //ui->editLog->insertPlainText(content);
-                qDebug() << content;
+                //qDebug() << content;
 
                 QJsonDocument doc = QJsonDocument::fromJson(message);
                 QJsonObject json = doc.object();
 
-                DeviceTab *newTab = new DeviceTab(this);
-                QBoxLayout *newTabLayout = new QBoxLayout(QBoxLayout::LeftToRight, newTab);
-                newTabLayout->addWidget(newTab, Qt::AlignCenter);
-                newTab->setObjectName(topic.name().remove(0, 9));
-
                 // Add tab
+                QString newTabObjectName = topic.name().remove(0, 9);
+
                 if (repeatedTopic(topic.name().remove(0, 9)) == false)
                 {
-                    ui->deviceTabWidget->addTab(newTab, topic.name().remove(0, 9));
+                    DeviceTab *newTab = new DeviceTab();
+                    QBoxLayout *newTabLayout = new QBoxLayout(QBoxLayout::LeftToRight, newTab);
+                    newTabLayout->addWidget(newTab, Qt::AlignCenter);
+                    newTab->setObjectName(newTabObjectName);
+                    ui->deviceTabWidget->addTab(newTab, newTabObjectName);
+                    connect(this, SIGNAL(sendJson(QJsonObject)), newTab, SLOT(recieveJson(QJsonObject)));
                 }
+
+                emitSendJson(json);
 
                 //                //Engine 1
                 //                QJsonValue eng1Value = json.value("eng1");
@@ -154,21 +158,21 @@ MainWindow::MainWindow(QWidget *parent)
                 //                }
             });
 
-    Sleeper::sleep(1);
+    //    Sleeper::sleep(1);
 }
 
 MainWindow::~MainWindow()
 {
-    killTimer(timerId);
+    //    killTimer(timerId);
     delete ui;
     qApp->quit();
 }
 
-void MainWindow::timerEvent(QTimerEvent *event)
-{
-    QMainWindow::timerEvent(event);
-    ui->graphicsEADI->redraw();
-}
+//void MainWindow::timerEvent(QTimerEvent *event)
+//{
+//    QMainWindow::timerEvent(event);
+//    ui->graphicsEADI->redraw();
+//}
 
 void MainWindow::updateLogStateChange()
 {
@@ -244,4 +248,9 @@ bool MainWindow::repeatedTopic(QString topic)
             return true;
     }
     return false;
+}
+
+void MainWindow::emitSendJson(QJsonObject m_Json)
+{
+    emit sendJson(m_Json);
 }
