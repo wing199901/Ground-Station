@@ -4,7 +4,6 @@
 #include <QQmlContext>
 #include <QQuickItem>
 #include <QQuickWidget>
-#include <QThread>
 #include <QtCore>
 #include <QtNetwork>
 #include <QtWidgets>
@@ -15,14 +14,6 @@
 //#include <QtMqtt/QMqttClient>
 
 #include "qmqttclient.h"
-
-//class Sleeper : public QThread
-//{
-//public:
-//    static void usleep(unsigned long usecs) { QThread::usleep(usecs); }
-//    static void msleep(unsigned long msecs) { QThread::msleep(msecs); }
-//    static void sleep(unsigned long secs) { QThread::sleep(secs); }
-//};
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) /*, timerId(0)*/
@@ -52,10 +43,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_client, &QMqttClient::messageReceived, this, [this](const QByteArray &message, const QMqttTopicName &topic)
             {
-                //                const QString content = QDateTime::currentDateTime().toString() +
-                //                                        QLatin1String(" Received Topic: ") +
-                //                                        topic.name() + QLatin1String(" Message: ") +
-                //                                        message + QLatin1Char('\n');
+                const QString content = QDateTime::currentDateTime().toString() +
+                                        QLatin1String(" Received Topic: ") +
+                                        topic.name() + QLatin1String(" Message: ") +
+                                        message + QLatin1Char('\n');
 
                 //ui->editLog->insertPlainText(content);
                 //qDebug() << content;
@@ -63,116 +54,46 @@ MainWindow::MainWindow(QWidget *parent)
                 QJsonDocument doc = QJsonDocument::fromJson(message);
                 QJsonObject json = doc.object();
 
-                // Add tab
-                QString newTabObjectName = topic.name().remove(0, 9);
+                // Device name
+                QString newDeviceName = topic.name().remove(0, 9);
 
                 if (repeatedTopic(topic.name().remove(0, 9)) == false)
                 {
+                    //newTab
                     DeviceTab *newTab = new DeviceTab();
+                    newTab->setObjectName(newDeviceName);
+
+                    //Apple align center to newTab
                     QBoxLayout *newTabLayout = new QBoxLayout(QBoxLayout::LeftToRight, newTab);
                     newTabLayout->addWidget(newTab, Qt::AlignCenter);
-                    newTab->setObjectName(newTabObjectName);
-                    ui->deviceTabWidget->addTab(newTab, newTabObjectName);
+
+                    //Add newTab to deviceYTabWidget
+                    ui->deviceTabWidget->addTab(newTab, newDeviceName);
+
+                    //Make connection between newTab and device json
                     connect(this, SIGNAL(sendJson(QJsonObject)), newTab, SLOT(recieveJson(QJsonObject)));
+
+                    //Create plane
+                    QVariant plane;
+                    QMetaObject::invokeMethod(
+                        ui->qmlMap->rootObject(),
+                        "addPlane",
+                        Q_RETURN_ARG(QVariant, plane),
+                        Q_ARG(QVariant, QVariant::fromValue(json["heading"].toDouble())),
+                        Q_ARG(QVariant, QVariant::fromValue(json["latitude"].toDouble())),
+                        Q_ARG(QVariant, QVariant::fromValue(json["longitude"].toDouble())),
+                        Q_ARG(QVariant, QVariant::fromValue(newDeviceName + "Plane")));
                 }
-
+                //Send json to newTab
                 emitSendJson(json);
-
-                //                //Engine 1
-                //                QJsonValue eng1Value = json.value("eng1");
-                //                QJsonObject eng1 = eng1Value.toObject();
-
-                //                ui->graphicsEADI->setAirspeed(json["ias"].toDouble());
-                //                ui->graphicsEADI->setAirspeedSel(json["airspeedSel"].toDouble());
-                //                ui->graphicsEADI->setAltitude(json["altitude"].toDouble());
-                //                ui->graphicsEADI->setAltitudeSel(json["altitudeSel"].toDouble());
-                //                ui->graphicsEADI->setClimbRate(json["verticalSpeed"].toDouble() / 1000);
-                //                ui->graphicsEADI->setHeading(json["heading"].toDouble());
-                //                ui->graphicsEADI->setHeadingSel(json["headingSel"].toDouble());
-                //                ui->graphicsEADI->setMachNo(json["mach"].toDouble());
-                //                ui->graphicsEADI->setOverspeed(json["overspeed"].toBool() || json["ias"].toDouble() > 255);
-                //                ui->graphicsEADI->setPause(json["pause"].toBool());
-                //                ui->graphicsEADI->setPitch(json["pitch"].toDouble());
-                //                ui->graphicsEADI->setPressure(json["pressure"].toDouble(), qfi_EADI::PressureMode::MB);
-                //                ui->graphicsEADI->setRoll(json["roll"].toDouble());
-                //                ui->graphicsEADI->setSlipSkid(json["slipskid"].toDouble());
-                //                ui->graphicsEADI->setStall(json["stall"].toBool());
-                //                ui->graphicsEADI->setTurnRate(json["turnRate"].toDouble() / 1024);
-
-                //                QObject *plane = ui->qmlMap->rootObject()->findChild<QObject *>("qmlPlane1");
-                //                if (plane)
-                //                {
-                //                    plane->setProperty("heading", json["heading"].toDouble());
-                //                    plane->setProperty("latitude", json["latitude"].toDouble());
-                //                    plane->setProperty("longitude", json["longitude"].toDouble());
-                //                    plane->setProperty("pilotName", json["name"].toString());
-                //                }
-
-                //                QObject *throttleMeter = ui->qmlGauge->rootObject()->findChild<QObject *>("throttleMeter");
-                //                if (throttleMeter)
-                //                {
-                //                    throttleMeter->setProperty("throttleLever", eng1["throttleLever"].toDouble());
-                //                }
-
-                //                QObject *propellerMeter = ui->qmlGauge->rootObject()->findChild<QObject *>("propellerMeter");
-                //                if (propellerMeter)
-                //                {
-                //                    propellerMeter->setProperty("propellerLever", eng1["propellerLever"].toDouble());
-                //                }
-
-                //                QObject *mixtureMeter = ui->qmlGauge->rootObject()->findChild<QObject *>("mixtureMeter");
-                //                if (mixtureMeter)
-                //                {
-                //                    mixtureMeter->setProperty("mixtureLever", eng1["mixtureLever"].toDouble());
-                //                }
-
-                //                QObject *fuelWeight = ui->qmlGauge->rootObject()->findChild<QObject *>("fuelWeight");
-                //                fuelWeight->setProperty("fuelWeight", json["fuelWeight"].toDouble());
-
-                //                QObject *flaps = ui->qmlGauge->rootObject()->findChild<QObject *>("flaps");
-                //                flaps->setProperty("flaps", json["flaps"].toDouble());
-
-                //                QObject *elevatorTrim = ui->qmlGauge->rootObject()->findChild<QObject *>("elevatorTrim");
-                //                elevatorTrim->setProperty("elevatorTrim", json["elevatorTrim"].toDouble());
-
-                //                QVariant memoCount;
-                //                QMetaObject::invokeMethod(
-                //                    ui->qmlGauge->rootObject(),
-                //                    "countMemo",
-                //                    Q_RETURN_ARG(QVariant, memoCount));
-
-                //                for (int i = 0; i < memoCount.toInt(); i++)
-                //                {
-                //                    QVariant key;
-                //                    QMetaObject::invokeMethod(
-                //                        ui->qmlGauge->rootObject(),
-                //                        "getJsonKey",
-                //                        Q_RETURN_ARG(QVariant, key),
-                //                        Q_ARG(QVariant, QVariant::fromValue(i)));
-
-                //                    QMetaObject::invokeMethod(
-                //                        ui->qmlGauge->rootObject(),
-                //                        "setVisible",
-                //                        Q_ARG(QVariant, QVariant::fromValue(i)),
-                //                        Q_ARG(QVariant, QVariant::fromValue(json[key.toString()].toBool())));
-                //                }
             });
-
-    //    Sleeper::sleep(1);
 }
 
 MainWindow::~MainWindow()
 {
-    //    killTimer(timerId);
     delete ui;
     qApp->quit();
 }
-
-//void MainWindow::timerEvent(QTimerEvent *event)
-//{
-//    QMainWindow::timerEvent(event);
-//    ui->graphicsEADI->redraw();
-//}
 
 void MainWindow::updateLogStateChange()
 {
@@ -180,7 +101,6 @@ void MainWindow::updateLogStateChange()
                             QLatin1String(": State Change") +
                             QString::number(m_client->state()) +
                             QLatin1Char('\n');
-    //ui->editLog->insertPlainText(content);
     qDebug() << content;
 }
 

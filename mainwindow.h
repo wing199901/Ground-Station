@@ -41,6 +41,7 @@ private slots:
 
 signals:
     void sendJson(QJsonObject);
+    void planeSend(double);
 
 private:
     Ui::MainWindow *ui;

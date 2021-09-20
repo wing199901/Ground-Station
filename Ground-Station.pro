@@ -1,4 +1,4 @@
-QT       += core gui mqtt network svg quickwidgets positioning
+QT       += core gui mqtt network svg quickwidgets positioning location location-private
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

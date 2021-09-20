@@ -1,6 +1,7 @@
 import QtQml 2.2
 import QtQuick 2.4
-import QtQuick.Controls 2.2
+import QtQuick.Controls 2.4
+import QtQuick.Extras 1.4
 import QtLocation 5.9
 import QtPositioning 5.12
 
@@ -29,11 +30,26 @@ Item {
         minimumZoomLevel: 1
         copyrightsVisible: false
 
-        Plane {
-            id: qmlPlane1
-            objectName: "qmlPlane1"
+        //        Plane {
+        //            id: qmlPlane1
+        //            objectName: "qmlPlane1"
 
-            coordinate: QtPositioning.coordinate(latitude, longitude)
-        }
+        //            coordinate: QtPositioning.coordinate(latitude, longitude)
+        //        }
+    }
+
+    function addPlane(heading, latitude, longitude, name) {
+        var component = Qt.createComponent("qrc:/qml/Plane.qml")
+        //if (component.status === Component.Ready) {
+        var plane = component.createObject(map, {
+                                               "heading": heading,
+                                               "latitude": latitude,
+                                               "longitude": longitude,
+                                               "pilotName": name
+                                           })
+        plane.objectName = name
+        map.addMapItem(plane)
+        //return plane
+        //}
     }
 }

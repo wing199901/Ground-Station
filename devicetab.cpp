@@ -1,8 +1,17 @@
 #include "devicetab.h"
 
 #include <QQuickItem>
+#include <QThread>
 
 #include "ui_devicetab.h"
+
+class Sleeper : public QThread
+{
+public:
+    static void usleep(unsigned long usecs) { QThread::usleep(usecs); }
+    static void msleep(unsigned long msecs) { QThread::msleep(msecs); }
+    static void sleep(unsigned long secs) { QThread::sleep(secs); }
+};
 
 DeviceTab::DeviceTab(QWidget *parent)
     : QWidget(parent), ui(new Ui::DeviceTab), timerId(0)
@@ -31,8 +40,6 @@ void DeviceTab::timerEvent(QTimerEvent *event)
 
 void DeviceTab::recieveJson(QJsonObject m_Json)
 {
-    qDebug() << m_Json;
-
     if (m_Json["name"] == objectName())
     {
         json = m_Json;
@@ -63,22 +70,13 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
     QJsonObject eng1 = eng1Value.toObject();
 
     QObject *throttleMeter = ui->qmlGauge->rootObject()->findChild<QObject *>("throttleMeter");
-    if (throttleMeter)
-    {
-        throttleMeter->setProperty("throttleLever", eng1["throttleLever"].toDouble());
-    }
+    throttleMeter->setProperty("throttleLever", eng1["throttleLever"].toDouble());
 
     QObject *propellerMeter = ui->qmlGauge->rootObject()->findChild<QObject *>("propellerMeter");
-    if (propellerMeter)
-    {
-        propellerMeter->setProperty("propellerLever", eng1["propellerLever"].toDouble());
-    }
+    propellerMeter->setProperty("propellerLever", eng1["propellerLever"].toDouble());
 
     QObject *mixtureMeter = ui->qmlGauge->rootObject()->findChild<QObject *>("mixtureMeter");
-    if (mixtureMeter)
-    {
-        mixtureMeter->setProperty("mixtureLever", eng1["mixtureLever"].toDouble());
-    }
+    mixtureMeter->setProperty("mixtureLever", eng1["mixtureLever"].toDouble());
 
     QObject *fuelWeight = ui->qmlGauge->rootObject()->findChild<QObject *>("fuelWeight");
     fuelWeight->setProperty("fuelWeight", json["fuelWeight"].toDouble());
@@ -111,4 +109,20 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
             Q_ARG(QVariant, QVariant::fromValue(i)),
             Q_ARG(QVariant, QVariant::fromValue(json[key.toString()].toBool())));
     }
+
+    //Get UI->qmlMap
+    QQuickWidget *qmlMap = QWidget::window()->findChild<QQuickWidget *>("qmlMap");
+
+    //Get the plane from UI->qmlMap
+    QObject *plane = qmlMap->rootObject()->findChild<QObject *>(json["name"].toString() + "Plane");
+
+    if (plane)
+    {
+        plane->setProperty("heading", json["heading"].toDouble());
+        plane->setProperty("latitude", json["latitude"].toDouble());
+        plane->setProperty("longitude", json["longitude"].toDouble());
+        plane->setProperty("pilotName", json["name"].toString());
+    }
+
+    Sleeper::sleep(1);
 }

@@ -300,10 +300,3 @@ Item {
         memo.model.setProperty(index, "__color", color)
     }
 }
-
-/*##^##
-Designer {
-    D{i:0;formeditorZoom:1.25}
-}
-##^##*/
-
