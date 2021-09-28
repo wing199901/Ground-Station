@@ -9,49 +9,22 @@ from time import sleep
 
 from fsuipc import FSUIPC
 from paho.mqtt import client as mqtt
+
+
 hostname = socket.gethostname()
+# reset = False
+
 
 def payload():
+    # global reset
     with FSUIPC() as fsuipc:
-        pause, pitot, ias, vertical_speed, compass, stall, overspeed, slip_skid, turn_rate, latitude, longitude,  pitch, roll, heading, heading_sel, altitude_sel, airspeed_sel, eng1_thro_lever, eng1_prop_lever, eng1_mix_lever, elevator_trim, parking_brake, landing_gear, flaps, pressure, mach, fuel_weight, angle_of_attack, side_slip, alternator, battery, avionics, fuel_pump, altitude = prepared.read()
-
-        # print(f"Pause: {pause}")
-        # print(f"Pitot: {pitot}")
-        # print(f"IAS: {ias}")
-        # print(f"Vertical Speed: {vertical_speed}")
-        # print(f"Compass: {compass}")
-        # print(f"Stall: {stall}")
-        # print(f"Overspeed: {overspeed}")
-        # print(f"Slip Skid: {slip_skid}")
-        # print(f"Turn Rate: {turn_rate}")
-        # print(f"Latitude: {latitude}")
-        # print(f"Longitude: {longitude}")
-        # print(f"Pitch: {pitch}")
-        # print(f"Roll: {roll}")
-        # print(f"Heading: {heading}")
-        # print(f"HeadingSel: {heading_sel}")
-        # print(f"AltitudeSel: {altitude_sel}")
-        # print(f"AirspeedSel: {airspeed_sel}")
-        # print(f"Eng1 Throttle Lever: {eng1_thro_lever}")
-        # print(f"Eng1 Propellor Lever: {eng1_prop_lever}")
-        # print(f"Eng1 Mixture Lever: {eng1_mix_lever}")
-        # print(f"Parking Brake: {parking_brake}")
-        # print(f"Landing Gear: {landing_gear}")
-        # print(f"Flaps: {flaps}")
-        # print(f"Pressure: {pressure}")
-        # print(f"Mach: {mach}")
-        # print(f"Angle of Attack: {angle_of_attack}")
-        # print(f"Side Slip: {side_slip}")
-        # print(f"Alternator: {alternator}")
-        # print(f"Battery: {battery}")
-        # print(f"Avionics Master: {avionics}")
-        # print(f"Fuel Pump: {fuel_pump}")
-        # print(f"Altitude: {altitude}")
+        pause, pitot, ias, vertical_speed, compass, stall, overspeed, slip_skid, turn_rate, latitude, longitude,  pitch, roll, heading, heading_sel, altitude_sel, airspeed_sel, eng1_thro_lever, eng1_prop_lever, eng1_mix_lever, elevator_trim, parking_brake, landing_gear, flaps, pressure, mach, fuel_weight, angle_of_attack, side_slip, alternator, battery, avionics, fuel_pump, altitude, sim_stopped = prepared.read()
 
         payload = {
             'name': hostname,
             'time': datetime.datetime.now().strftime('%m/%d %H:%M:%S'),
             'pause': bool(pause),
+            'reset': bool(pause) and bool(sim_stopped),
             'pitot': bool(pitot),
             'ias': ias / 128,
             'verticalSpeed': vertical_speed * 60 * 3.28084 / 256,
@@ -87,23 +60,23 @@ def payload():
             'avionics': bool(avionics),
             'fuelPump': bool(fuel_pump),
             'altitude': altitude,
+            'simStopped': bool(sim_stopped),
         }
 
-        print(payload)
+        # print(payload)
 
     return payload
 
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
-    client.subscribe("f/Devices/{hostname}/Command", qos=2)
+    client.subscribe(f"/Devices/{hostname}/Command", qos=2)
 
 
 def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
 
     message = json.loads(msg.payload)
-
     print(message)
 
     with FSUIPC() as fsuipc:
@@ -115,6 +88,13 @@ def on_message(client, userdata, msg):
         if message['reset'] == True:
             # "Situation reset" control (65591)
             fsuipc.write([(0x3110, "l", 65591)])
+
+        # global reset
+        # reset = message['reset']
+
+        # while reset == True:
+        #     if prepared.read()[0] == False:
+        #         reset = False
 
 
 def on_publish(client, userdata, mid):
@@ -154,7 +134,9 @@ if __name__ == "__main__":
             (0x36C, "c"),  # Stall
             (0x36D, "c"),  # Overspeed
             (0x36E, "c"),  # Slip Skid
+            # (0x372, "h"),  # Reliability
             (0x37C, "h"),  # Turn Rate
+            # (0x55C, "d"),  # Init
             (0x560, "l"),  # Latitude
             (0x568, "l"),  # Longitude
             (0x578, "d"),  # Pitch
@@ -180,6 +162,8 @@ if __name__ == "__main__":
             (0x3103, "c"),  # Avionics Master
             (0x3104, "c"),  # Fuel Pump
             (0x3324, "d"),  # Altitude
+            (0x3365, "c"),  # In Menu or Dialog
+            # (0x3BF8, "h"),  # Number of Flaps
         ], True)
 
     while True:

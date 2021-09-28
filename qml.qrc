@@ -11,5 +11,6 @@
         <file>ECAMStyles/Colors.qml</file>
         <file>ECAMStyles/qmldir</file>
         <file>qml/speedGauge.qml</file>
+        <file>qml/PlanePoly.qml</file>
     </qresource>
 </RCC>

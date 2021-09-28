@@ -22,10 +22,18 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void emitSendJson(QJsonObject);
+signals:
+    void sendJson(QJsonObject);
+    void createPlaneSignal();
 
-    //protected:
-    //    void timerEvent(QTimerEvent *event);
+private:
+    Ui::MainWindow *ui;
+    QMqttClient *m_client;
+
+    QString getCurrentDeviceName();
+    bool repeatedTopic(QString topic);
+
+    void emitSendJson(QJsonObject);
 
 private slots:
     void updateLogStateChange();
@@ -35,19 +43,5 @@ private slots:
     void on_actionSubscript_triggered();
     void on_actionPause_toggled(bool arg1);
     void on_actionReset_triggered();
-    void on_actionTest_triggered();
-
-    bool repeatedTopic(QString topic);
-
-signals:
-    void sendJson(QJsonObject);
-    void planeSend(double);
-
-private:
-    Ui::MainWindow *ui;
-    //    int timerId;
-    QMqttClient *m_client;
-    //    QMqttTopicFilter *topic;
-    //    QString *newTabObjectName;
 };
 #endif // MAINWINDOW_H

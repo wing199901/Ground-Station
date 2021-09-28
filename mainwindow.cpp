@@ -16,19 +16,13 @@
 #include "qmqttclient.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow) /*, timerId(0)*/
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     ui->menubar->setNativeMenuBar(true);
-    //    timerId = startTimer(50);
-
-    //    auto gauge = ui->qmlGauge;
-    //    gauge->setAttribute(Qt::WA_AlwaysStackOnTop);
-    //    gauge->setAttribute(Qt::WA_TranslucentBackground);
-    //    gauge->setClearColor(Qt::transparent);
-    //    gauge->setSource(QUrl("qrc:/qml/qmlGauge.qml"));
 
     ui->qmlMap->setSource(QUrl("qrc:/qml/qmlMap.qml"));
+    ui->qmlMap->setObjectName("qmlMap");
 
     m_client = new QMqttClient(this);
     //    m_client->setHostname("aerosimmqtt.eastasia.azurecontainer.io");
@@ -57,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent)
                 // Device name
                 QString newDeviceName = topic.name().remove(0, 9);
 
-                if (repeatedTopic(topic.name().remove(0, 9)) == false)
+                if (repeatedTopic(newDeviceName) == false)
                 {
                     //newTab
                     DeviceTab *newTab = new DeviceTab();
@@ -70,19 +64,28 @@ MainWindow::MainWindow(QWidget *parent)
                     //Add newTab to deviceYTabWidget
                     ui->deviceTabWidget->addTab(newTab, newDeviceName);
 
-                    //Make connection between newTab and device json
+                    //Connection between newTab and device json
                     connect(this, SIGNAL(sendJson(QJsonObject)), newTab, SLOT(recieveJson(QJsonObject)));
 
+                    //Create plane connection
+                    connect(this, SIGNAL(createPlaneSignal()), newTab, SLOT(createPlaneSlot()));
+
+                    //Create Plane
+                    emit createPlaneSignal();
+
                     //Create plane
-                    QVariant plane;
-                    QMetaObject::invokeMethod(
-                        ui->qmlMap->rootObject(),
-                        "addPlane",
-                        Q_RETURN_ARG(QVariant, plane),
-                        Q_ARG(QVariant, QVariant::fromValue(json["heading"].toDouble())),
-                        Q_ARG(QVariant, QVariant::fromValue(json["latitude"].toDouble())),
-                        Q_ARG(QVariant, QVariant::fromValue(json["longitude"].toDouble())),
-                        Q_ARG(QVariant, QVariant::fromValue(newDeviceName + "Plane")));
+                    //                    QMetaObject::invokeMethod(
+                    //                        ui->qmlMap->rootObject(),
+                    //                        "addPlane",
+                    //                        Q_ARG(QVariant, QVariant::fromValue(json["heading"].toDouble())),
+                    //                        Q_ARG(QVariant, QVariant::fromValue(json["latitude"].toDouble())),
+                    //                        Q_ARG(QVariant, QVariant::fromValue(json["longitude"].toDouble())),
+                    //                        Q_ARG(QVariant, QVariant::fromValue(newDeviceName + "Plane")));
+
+                    //                    QMetaObject::invokeMethod(
+                    //                        ui->qmlMap->rootObject(),
+                    //                        "addPoly",
+                    //                        Q_ARG(QVariant, QVariant::fromValue(newDeviceName + "Poly")));
                 }
                 //Send json to newTab
                 emitSendJson(json);
@@ -133,16 +136,18 @@ void MainWindow::on_actionPause_toggled(bool arg1)
 {
     QJsonObject obj;
     obj.insert("pause", arg1);
-    obj.insert("reset", QJsonValue::Type::Null);
+    obj.insert("reset", false);
 
     QJsonDocument doc(obj);
     QByteArray data = doc.toJson();
 
-    m_client->publish(QMqttTopicName("/Sensors/ModelA/Command"), data, 2, false);
+    m_client->publish(QMqttTopicName("/Devices/" + getCurrentDeviceName() + "/Command"), data, 2, false);
 }
 
 void MainWindow::on_actionReset_triggered()
 {
+    ui->actionPause->setChecked(false);
+
     QJsonObject obj;
     obj.insert("pause", false);
     obj.insert("reset", true);
@@ -150,14 +155,7 @@ void MainWindow::on_actionReset_triggered()
     QJsonDocument doc(obj);
     QByteArray data = doc.toJson();
 
-    m_client->publish(QMqttTopicName("/Sensors/ModelA/Command"), data, 2, false);
-
-    ui->actionPause->setChecked(false);
-}
-
-void MainWindow::on_actionTest_triggered()
-{
-    ui->deviceTabWidget->setTabText(0, "Testing");
+    m_client->publish(QMqttTopicName("/Devices/" + getCurrentDeviceName() + "/Command"), data, 2, false);
 }
 
 bool MainWindow::repeatedTopic(QString topic)
@@ -173,4 +171,9 @@ bool MainWindow::repeatedTopic(QString topic)
 void MainWindow::emitSendJson(QJsonObject m_Json)
 {
     emit sendJson(m_Json);
+}
+
+QString MainWindow::getCurrentDeviceName()
+{
+    return ui->deviceTabWidget->currentWidget()->objectName();
 }

@@ -2,6 +2,7 @@
 #define DEVICETAB_H
 
 #include <QJsonObject>
+#include <QQuickWidget>
 #include <QWidget>
 
 namespace Ui
@@ -17,6 +18,10 @@ public:
     explicit DeviceTab(QWidget *parent = nullptr);
     ~DeviceTab();
 
+public slots:
+    void createPlaneSlot();
+    void recieveJson(QJsonObject);
+
 protected:
     void timerEvent(QTimerEvent *event);
 
@@ -24,9 +29,9 @@ private:
     Ui::DeviceTab *ui;
     int timerId;
     QJsonObject json;
-
-public slots:
-    void recieveJson(QJsonObject);
+    QQuickWidget *qmlMap;
+    QObject *plane;
+    QObject *planePoly;
 };
 
 #endif // DEVICETAB_H

@@ -5,14 +5,6 @@
 
 #include "ui_devicetab.h"
 
-class Sleeper : public QThread
-{
-public:
-    static void usleep(unsigned long usecs) { QThread::usleep(usecs); }
-    static void msleep(unsigned long msecs) { QThread::msleep(msecs); }
-    static void sleep(unsigned long secs) { QThread::sleep(secs); }
-};
-
 DeviceTab::DeviceTab(QWidget *parent)
     : QWidget(parent), ui(new Ui::DeviceTab), timerId(0)
 {
@@ -36,6 +28,30 @@ void DeviceTab::timerEvent(QTimerEvent *event)
 {
     QWidget::timerEvent(event);
     ui->graphicsEADI->redraw();
+}
+
+void DeviceTab::createPlaneSlot()
+{
+    //Get qmlMap
+    qmlMap = QWidget::window()->findChild<QQuickWidget *>("qmlMap");
+
+    //Create plane to qmlMap
+    QMetaObject::invokeMethod(
+        qmlMap->rootObject(),
+        "addPlane",
+        Q_ARG(QVariant, QVariant::fromValue(objectName() + "Plane")));
+
+    //Get plane from qmlMap
+    plane = qmlMap->rootObject()->findChild<QObject *>(objectName() + "Plane");
+
+    //Create plane poly to qmlMap
+    QMetaObject::invokeMethod(
+        qmlMap->rootObject(),
+        "addPoly",
+        Q_ARG(QVariant, QVariant::fromValue(objectName() + "Poly")));
+
+    //Get poly form qmlMap
+    planePoly = qmlMap->rootObject()->findChild<QObject *>(objectName() + "Poly");
 }
 
 void DeviceTab::recieveJson(QJsonObject m_Json)
@@ -87,6 +103,7 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
     QObject *elevatorTrim = ui->qmlGauge->rootObject()->findChild<QObject *>("elevatorTrim");
     elevatorTrim->setProperty("elevatorTrim", json["elevatorTrim"].toDouble());
 
+    //MEMO
     QVariant memoCount;
 
     QMetaObject::invokeMethod(
@@ -110,19 +127,22 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
             Q_ARG(QVariant, QVariant::fromValue(json[key.toString()].toBool())));
     }
 
-    //Get UI->qmlMap
-    QQuickWidget *qmlMap = QWidget::window()->findChild<QQuickWidget *>("qmlMap");
+    //Plane
+    plane->setProperty("heading", json["heading"].toDouble());
+    plane->setProperty("latitude", json["latitude"].toDouble());
+    plane->setProperty("longitude", json["longitude"].toDouble());
 
-    //Get the plane from UI->qmlMap
-    QObject *plane = qmlMap->rootObject()->findChild<QObject *>(json["name"].toString() + "Plane");
+    //Plane poly
+    QMetaObject::invokeMethod(
+        planePoly,
+        "addPolyPoint",
+        Q_ARG(QVariant, QVariant::fromValue(json["latitude"].toDouble())),
+        Q_ARG(QVariant, QVariant::fromValue(json["longitude"].toDouble())));
 
-    if (plane)
+    if (json["reset"].toBool())
     {
-        plane->setProperty("heading", json["heading"].toDouble());
-        plane->setProperty("latitude", json["latitude"].toDouble());
-        plane->setProperty("longitude", json["longitude"].toDouble());
-        plane->setProperty("pilotName", json["name"].toString());
+        QMetaObject::invokeMethod(
+            planePoly,
+            "removePoly");
     }
-
-    Sleeper::sleep(1);
 }

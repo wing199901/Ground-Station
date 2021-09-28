@@ -2,7 +2,7 @@ import QtQml 2.2
 import QtQuick 2.4
 import QtQuick.Controls 2.4
 import QtQuick.Extras 1.4
-import QtLocation 5.9
+import QtLocation 5.12
 import QtPositioning 5.12
 
 Item {
@@ -29,27 +29,22 @@ Item {
         maximumZoomLevel: 14
         minimumZoomLevel: 1
         copyrightsVisible: false
-
-        //        Plane {
-        //            id: qmlPlane1
-        //            objectName: "qmlPlane1"
-
-        //            coordinate: QtPositioning.coordinate(latitude, longitude)
-        //        }
     }
 
-    function addPlane(heading, latitude, longitude, name) {
+    function addPlane(name) {
         var component = Qt.createComponent("qrc:/qml/Plane.qml")
-        //if (component.status === Component.Ready) {
         var plane = component.createObject(map, {
-                                               "heading": heading,
-                                               "latitude": latitude,
-                                               "longitude": longitude,
-                                               "pilotName": name
+                                               "pilotName": name.replace(
+                                                                "Plane", "")
                                            })
         plane.objectName = name
         map.addMapItem(plane)
-        //return plane
-        //}
+    }
+
+    function addPoly(name) {
+        var component = Qt.createComponent("qrc:/qml/PlanePoly.qml")
+        var poly = component.createObject(map)
+        poly.objectName = name
+        map.addMapItem(poly)
     }
 }
