@@ -18,7 +18,7 @@ hostname = socket.gethostname()
 def payload():
     # global reset
     with FSUIPC() as fsuipc:
-        pause, pitot, ias, vertical_speed, compass, stall, overspeed, slip_skid, turn_rate, latitude, longitude,  pitch, roll, heading, heading_sel, altitude_sel, airspeed_sel, eng1_thro_lever, eng1_prop_lever, eng1_mix_lever, elevator_trim, parking_brake, landing_gear, flaps, pressure, mach, fuel_weight, angle_of_attack, side_slip, alternator, battery, avionics, fuel_pump, altitude, sim_stopped = prepared.read()
+        pause, pitot, ias, vertical_speed, whiskey_compass, stall, overspeed, slip_skid, turn_rate, latitude, longitude,  pitch, roll, heading, heading_sel, altitude_sel, airspeed_sel, eng1_thro_lever, eng1_prop_lever, eng1_mix_lever, elevator_trim, parking_brake, landing_gear, flaps, pressure, mach, fuel_weight, angle_of_attack, side_slip, alternator, battery, avionics, fuel_pump, altitude, sim_stopped = prepared.read()
 
         payload = {
             'name': hostname,
@@ -28,7 +28,7 @@ def payload():
             'pitot': bool(pitot),
             'ias': ias / 128,
             'verticalSpeed': vertical_speed * 60 * 3.28084 / 256,
-            'compass': compass,
+            'whiskeyCompass': whiskey_compass,
             'stall': bool(stall),
             'overspeed': bool(overspeed),
             'slipSkid': slip_skid,
@@ -130,7 +130,7 @@ if __name__ == "__main__":
             (0x29C, "c"),  # Pitot
             (0x2BC, "d"),  # IAS
             (0x2C8, "d"),  # Vertical Speed
-            (0x2CC, "d"),  # Compass
+            (0x2CC, "l"),  # Whiskey Compass
             (0x36C, "c"),  # Stall
             (0x36D, "c"),  # Overspeed
             (0x36E, "c"),  # Slip Skid

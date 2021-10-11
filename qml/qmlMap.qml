@@ -9,6 +9,28 @@ Item {
     width: 500
     height: 500
 
+    Timer {
+        id: mapCenterRefreshTimer
+        running: false
+        interval: 500
+        repeat: true
+        onTriggered: {
+            map.fitViewportToMapItems()
+        }
+    }
+
+    Timer {
+        id: trackPlaneRefreshTimer
+        running: false
+        interval: 500
+        repeat: true
+        property var plane
+        onTriggered: {
+            //            map.fitViewportToMapItems()
+            map.center = plane.coordinate
+        }
+    }
+
     Map {
         id: map
         objectName: "map"
@@ -29,6 +51,30 @@ Item {
         maximumZoomLevel: 14
         minimumZoomLevel: 1
         copyrightsVisible: false
+
+        //gesture.enabled: true
+        //gesture.acceptedGestures: MapGestureArea.PanGesture
+    }
+
+    MouseArea {
+        anchors.fill: parent
+
+        property int lastX: -1
+        property int lastY: -1
+
+        onPressed: {
+            lastX = mouse.x
+            lastY = mouse.y
+        }
+
+        onPositionChanged: {
+            map.pan(lastX - mouse.x, lastY - mouse.y)
+            lastX = mouse.x
+            lastY = mouse.y
+
+            mapCenterRefreshTimer.stop()
+            trackPlaneRefreshTimer.stop()
+        }
     }
 
     function addPlane(name) {
@@ -46,5 +92,22 @@ Item {
         var poly = component.createObject(map)
         poly.objectName = name
         map.addMapItem(poly)
+    }
+
+    function startTimer() {
+        mapCenterRefreshTimer.start()
+    }
+
+    function stopTimer() {
+        mapCenterRefreshTimer.stop()
+    }
+
+    function startTrackPlane(plane) {
+        trackPlaneRefreshTimer.plane = plane
+        trackPlaneRefreshTimer.start()
+    }
+
+    function stopTrackPlane() {
+        trackPlaneRefreshTimer.stop()
     }
 }

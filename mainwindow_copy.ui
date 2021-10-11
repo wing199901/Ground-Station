@@ -76,7 +76,7 @@
     <addaction name="actionPause"/>
     <addaction name="actionReset"/>
     <addaction name="separator"/>
-    <addaction name="actionTest"/>
+    <addaction name="actionCenter_Map_by_Planes"/>
    </widget>
    <addaction name="menuMQTT"/>
    <addaction name="menuControl"/>
@@ -104,9 +104,9 @@
     <string>Reset</string>
    </property>
   </action>
-  <action name="actionTest">
+  <action name="actionCenter_Map_by_Planes">
    <property name="text">
-    <string>Test</string>
+    <string>Center Map by Planes</string>
    </property>
   </action>
  </widget>

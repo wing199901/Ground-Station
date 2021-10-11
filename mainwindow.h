@@ -3,6 +3,7 @@
 
 #include <QJsonObject>
 #include <QMainWindow>
+#include <QWidget>
 
 //#include <QtMqtt/QMqttClient>
 #include "qmqttclient.h"
@@ -25,6 +26,7 @@ public:
 signals:
     void sendJson(QJsonObject);
     void createPlaneSignal();
+    void selectTab(QString);
 
 private:
     Ui::MainWindow *ui;
@@ -43,5 +45,7 @@ private slots:
     void on_actionSubscript_triggered();
     void on_actionPause_toggled(bool arg1);
     void on_actionReset_triggered();
+    void on_deviceTabWidget_currentChanged(int index);
+    void on_actionCenter_Map_by_Planes_triggered(bool checked);
 };
 #endif // MAINWINDOW_H

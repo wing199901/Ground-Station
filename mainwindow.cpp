@@ -1,12 +1,13 @@
 #include "mainwindow.h"
 
 #include <QGeoCoordinate>
+#include <QMessageBox>
 #include <QQmlContext>
 #include <QQuickItem>
 #include <QQuickWidget>
+#include <QWidget>
 #include <QtCore>
 #include <QtNetwork>
-#include <QtWidgets>
 
 #include "devicetab.h"
 #include "ui_mainwindow_copy.h"
@@ -42,8 +43,8 @@ MainWindow::MainWindow(QWidget *parent)
                                         topic.name() + QLatin1String(" Message: ") +
                                         message + QLatin1Char('\n');
 
-                //ui->editLog->insertPlainText(content);
-                //qDebug() << content;
+                // ui->editLog->insertPlainText(content);
+                // qDebug() << content;
 
                 QJsonDocument doc = QJsonDocument::fromJson(message);
                 QJsonObject json = doc.object();
@@ -53,43 +54,32 @@ MainWindow::MainWindow(QWidget *parent)
 
                 if (repeatedTopic(newDeviceName) == false)
                 {
-                    //newTab
+                    // newTab
                     DeviceTab *newTab = new DeviceTab();
                     newTab->setObjectName(newDeviceName);
 
-                    //Apple align center to newTab
+                    // Apple align center to newTab
                     QBoxLayout *newTabLayout = new QBoxLayout(QBoxLayout::LeftToRight, newTab);
                     newTabLayout->addWidget(newTab, Qt::AlignCenter);
 
-                    //Add newTab to deviceYTabWidget
-                    ui->deviceTabWidget->addTab(newTab, newDeviceName);
+                    // Add newTab to deviceYTabWidget
+                    ui->deviceTabWidget->insertTab(ui->deviceTabWidget->currentIndex() + 1, newTab, newDeviceName);
 
-                    //Connection between newTab and device json
+                    ui->deviceTabWidget->setCurrentIndex(ui->deviceTabWidget->indexOf(newTab));
+
+                    // Connection between newTab and device json
                     connect(this, SIGNAL(sendJson(QJsonObject)), newTab, SLOT(recieveJson(QJsonObject)));
 
-                    //Create plane connection
+                    // Create plane connection
                     connect(this, SIGNAL(createPlaneSignal()), newTab, SLOT(createPlaneSlot()));
 
-                    //Create Plane
+                    // Create Plane
                     emit createPlaneSignal();
 
-                    //Create plane
-                    //                    QMetaObject::invokeMethod(
-                    //                        ui->qmlMap->rootObject(),
-                    //                        "addPlane",
-                    //                        Q_ARG(QVariant, QVariant::fromValue(json["heading"].toDouble())),
-                    //                        Q_ARG(QVariant, QVariant::fromValue(json["latitude"].toDouble())),
-                    //                        Q_ARG(QVariant, QVariant::fromValue(json["longitude"].toDouble())),
-                    //                        Q_ARG(QVariant, QVariant::fromValue(newDeviceName + "Plane")));
-
-                    //                    QMetaObject::invokeMethod(
-                    //                        ui->qmlMap->rootObject(),
-                    //                        "addPoly",
-                    //                        Q_ARG(QVariant, QVariant::fromValue(newDeviceName + "Poly")));
+                    connect(this, SIGNAL(selectTab(QString)), newTab, SLOT(tabSelected(QString)));
                 }
-                //Send json to newTab
-                emitSendJson(json);
-            });
+                // Send json to newTab
+                emitSendJson(json); });
 }
 
 MainWindow::~MainWindow()
@@ -176,4 +166,29 @@ void MainWindow::emitSendJson(QJsonObject m_Json)
 QString MainWindow::getCurrentDeviceName()
 {
     return ui->deviceTabWidget->currentWidget()->objectName();
+}
+
+// Send the current widget object name
+void MainWindow::on_deviceTabWidget_currentChanged(int index)
+{
+    emit selectTab(ui->deviceTabWidget->widget(index)->objectName());
+
+    // Disable Map center
+    on_actionCenter_Map_by_Planes_triggered(false);
+}
+
+void MainWindow::on_actionCenter_Map_by_Planes_triggered(bool checked)
+{
+    if (checked)
+    {
+        QMetaObject::invokeMethod(
+            ui->qmlMap->rootObject(),
+            "startTimer");
+    }
+    else
+    {
+        QMetaObject::invokeMethod(
+            ui->qmlMap->rootObject(),
+            "stopTimer");
+    }
 }

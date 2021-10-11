@@ -32,26 +32,31 @@ void DeviceTab::timerEvent(QTimerEvent *event)
 
 void DeviceTab::createPlaneSlot()
 {
-    //Get qmlMap
+    // Get qmlMap
     qmlMap = QWidget::window()->findChild<QQuickWidget *>("qmlMap");
 
-    //Create plane to qmlMap
-    QMetaObject::invokeMethod(
-        qmlMap->rootObject(),
-        "addPlane",
-        Q_ARG(QVariant, QVariant::fromValue(objectName() + "Plane")));
-
-    //Get plane from qmlMap
     plane = qmlMap->rootObject()->findChild<QObject *>(objectName() + "Plane");
 
-    //Create plane poly to qmlMap
-    QMetaObject::invokeMethod(
-        qmlMap->rootObject(),
-        "addPoly",
-        Q_ARG(QVariant, QVariant::fromValue(objectName() + "Poly")));
+    if (!plane)
+    {
+        // Create plane to qmlMap
+        QMetaObject::invokeMethod(
+            qmlMap->rootObject(),
+            "addPlane",
+            Q_ARG(QVariant, QVariant::fromValue(objectName() + "Plane")));
 
-    //Get poly form qmlMap
-    planePoly = qmlMap->rootObject()->findChild<QObject *>(objectName() + "Poly");
+        // Get plane from qmlMap
+        plane = qmlMap->rootObject()->findChild<QObject *>(objectName() + "Plane");
+
+        // Create plane poly to qmlMap
+        QMetaObject::invokeMethod(
+            qmlMap->rootObject(),
+            "addPoly",
+            Q_ARG(QVariant, QVariant::fromValue(objectName() + "Poly")));
+
+        // Get poly form qmlMap
+        planePoly = qmlMap->rootObject()->findChild<QObject *>(objectName() + "Poly");
+    }
 }
 
 void DeviceTab::recieveJson(QJsonObject m_Json)
@@ -61,7 +66,7 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
         json = m_Json;
     }
 
-    //EADI
+    // EADI
     ui->graphicsEADI->setAirspeed(json["ias"].toDouble());
     ui->graphicsEADI->setAirspeedSel(json["airspeedSel"].toDouble());
     ui->graphicsEADI->setAltitude(json["altitude"].toDouble());
@@ -79,9 +84,9 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
     ui->graphicsEADI->setStall(json["stall"].toBool());
     ui->graphicsEADI->setTurnRate(json["turnRate"].toDouble() / 1024);
 
-    //ECAM
+    // ECAM
 
-    //Engine 1
+    // Engine 1
     QJsonValue eng1Value = json.value("eng1");
     QJsonObject eng1 = eng1Value.toObject();
 
@@ -103,7 +108,7 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
     QObject *elevatorTrim = ui->qmlGauge->rootObject()->findChild<QObject *>("elevatorTrim");
     elevatorTrim->setProperty("elevatorTrim", json["elevatorTrim"].toDouble());
 
-    //MEMO
+    // MEMO
     QVariant memoCount;
 
     QMetaObject::invokeMethod(
@@ -127,12 +132,12 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
             Q_ARG(QVariant, QVariant::fromValue(json[key.toString()].toBool())));
     }
 
-    //Plane
+    // Plane
     plane->setProperty("heading", json["heading"].toDouble());
     plane->setProperty("latitude", json["latitude"].toDouble());
     plane->setProperty("longitude", json["longitude"].toDouble());
 
-    //Plane poly
+    // Plane poly
     QMetaObject::invokeMethod(
         planePoly,
         "addPolyPoint",
@@ -144,5 +149,17 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
         QMetaObject::invokeMethod(
             planePoly,
             "removePoly");
+    }
+}
+
+void DeviceTab::tabSelected(QString tabName)
+{
+    // self equals tab current widget
+    if (this->objectName() == tabName)
+    {
+        QMetaObject::invokeMethod(
+            qmlMap->rootObject(),
+            "startTrackPlane",
+            Q_ARG(QVariant, QVariant::fromValue(plane)));
     }
 }

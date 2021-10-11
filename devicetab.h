@@ -21,6 +21,7 @@ public:
 public slots:
     void createPlaneSlot();
     void recieveJson(QJsonObject);
+    void tabSelected(QString);
 
 protected:
     void timerEvent(QTimerEvent *event);
