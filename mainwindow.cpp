@@ -176,21 +176,14 @@ void MainWindow::on_deviceTabWidget_currentChanged(int index)
     emit selectTab(ui->deviceTabWidget->widget(index)->objectName());
 
     // Disable Map center
-    on_actionCenter_Map_by_Planes_triggered(false);
+    QMetaObject::invokeMethod(
+        ui->qmlMap->rootObject(),
+        "stopTimer");
 }
 
-void MainWindow::on_actionCenter_Map_by_Planes_triggered(bool checked)
+void MainWindow::on_actionCenter_Map_by_Planes_triggered()
 {
-    if (checked)
-    {
-        QMetaObject::invokeMethod(
-            ui->qmlMap->rootObject(),
-            "startTimer");
-    }
-    else
-    {
-        QMetaObject::invokeMethod(
-            ui->qmlMap->rootObject(),
-            "stopTimer");
-    }
+    QMetaObject::invokeMethod(
+        ui->qmlMap->rootObject(),
+        "startTimer");
 }
