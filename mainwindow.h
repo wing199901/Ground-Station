@@ -46,6 +46,6 @@ private slots:
     void on_actionPause_toggled(bool arg1);
     void on_actionReset_triggered();
     void on_deviceTabWidget_currentChanged(int index);
-    void on_actionCenter_Map_by_Planes_triggered(bool checked);
+    void on_actionCenter_Map_by_Planes_triggered();
 };
 #endif // MAINWINDOW_H
