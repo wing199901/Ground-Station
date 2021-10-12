@@ -54,28 +54,38 @@ Item {
 
         //gesture.enabled: true
         //gesture.acceptedGestures: MapGestureArea.PanGesture
-    }
 
-    MouseArea {
-        anchors.fill: parent
 
-        property int lastX: -1
-        property int lastY: -1
+        MouseArea {
+            anchors.fill: parent
 
-        onPressed: {
-            lastX = mouse.x
-            lastY = mouse.y
+            property int lastX: -1
+            property int lastY: -1
+
+            onPressed: {
+                lastX = mouse.x
+                lastY = mouse.y
+            }
+
+            onPositionChanged: {
+                map.pan(lastX - mouse.x, lastY - mouse.y)
+                lastX = mouse.x
+                lastY = mouse.y
+
+                mapCenterRefreshTimer.stop()
+                trackPlaneRefreshTimer.stop()
+            }
         }
 
-        onPositionChanged: {
-            map.pan(lastX - mouse.x, lastY - mouse.y)
-            lastX = mouse.x
-            lastY = mouse.y
 
-            mapCenterRefreshTimer.stop()
-            trackPlaneRefreshTimer.stop()
+        Component.onCompleted: {
+            console.log("Dimensions: ", width, height)
         }
     }
+
+
+
+
 
     function addPlane(name) {
         var component = Qt.createComponent("qrc:/qml/Plane.qml")

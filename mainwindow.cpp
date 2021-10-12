@@ -25,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->qmlMap->setSource(QUrl("qrc:/qml/qmlMap.qml"));
     ui->qmlMap->setObjectName("qmlMap");
 
+    qDebug() << "OpenSSl Support:" << QSslSocket::supportsSsl();
+
     m_client = new QMqttClient(this);
     //    m_client->setHostname("aerosimmqtt.eastasia.azurecontainer.io");
     m_client->setHostname("192.168.0.128");
