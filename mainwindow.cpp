@@ -175,10 +175,11 @@ void MainWindow::on_deviceTabWidget_currentChanged(int index)
 {
     emit selectTab(ui->deviceTabWidget->widget(index)->objectName());
 
-    // Disable Map center
-    QMetaObject::invokeMethod(
-        ui->qmlMap->rootObject(),
-        "stopTimer");
+}
+
+void MainWindow::on_deviceTabWidget_tabBarClicked(int index)
+{
+    emit selectTab(ui->deviceTabWidget->widget(index)->objectName());
 }
 
 void MainWindow::on_actionCenter_Map_by_Planes_triggered()
@@ -187,3 +188,6 @@ void MainWindow::on_actionCenter_Map_by_Planes_triggered()
         ui->qmlMap->rootObject(),
         "startTimer");
 }
+
+
+

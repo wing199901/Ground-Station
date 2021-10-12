@@ -106,6 +106,7 @@ Item {
 
     function startTimer() {
         mapCenterRefreshTimer.start()
+        stopTrackPlane()
     }
 
     function stopTimer() {
@@ -115,6 +116,7 @@ Item {
     function startTrackPlane(plane) {
         trackPlaneRefreshTimer.plane = plane
         trackPlaneRefreshTimer.start()
+        stopTimer()
     }
 
     function stopTrackPlane() {
