@@ -33,6 +33,7 @@ private:
     QQuickWidget *qmlMap;
     QObject *plane;
     QObject *planePoly;
+    bool isPaused();
 };
 
 #endif // DEVICETAB_H

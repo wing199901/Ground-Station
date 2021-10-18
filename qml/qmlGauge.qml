@@ -83,7 +83,8 @@ Item {
             height: 200
             anchors.bottom: parent.bottom
             antialiasing: true
-            model: WarningModel {}
+            //            model: WarningModel {}
+            model: LightSwitchModel {}
             delegate: Text {
                 text: name
                 color: __color
@@ -281,15 +282,16 @@ Item {
         }
     }
 
-    function getJsonKey(index) {
-        return memo.model.get(index).josnKey
+    function getMemoJsonKeys() {
+        var array = new Array(0)
+        for (var i = 0; i < memo.model.count; i++) {
+            array.push(memo.model.get(i).josnKey)
+        }
+
+        return array
     }
 
-    function countMemo() {
-        return memo.model.count
-    }
-
-    function setVisible(index, visible) {
+    function setMemoVisible(index, visible) {
         if (memo.model.get(index).__visible !== visible) {
             memo.model.setProperty(index, "__visible", visible)
             memo.model.move(index, memo.model.count - 1, 1)
@@ -298,5 +300,21 @@ Item {
 
     function setMemoColor(index, color) {
         memo.model.setProperty(index, "__color", color)
+    }
+
+    function getWarningJsonKeys() {
+        var array = new Array(0)
+        for (var i = 0; i < warning.model.count; i++) {
+            array.push(warning.model.get(i).josnKey)
+        }
+
+        return array
+    }
+
+    function setWarningVisible(index, visible) {
+        if (warning.model.get(index).__visible !== visible) {
+            warning.model.setProperty(index, "__visible", visible)
+            warning.model.move(index, warning.model.count - 1, 1)
+        }
     }
 }

@@ -1,5 +1,5 @@
 import QtQml 2.2
-import QtQuick 2.4
+import QtQuick 2.12
 import QtQuick.Controls 2.4
 import QtQuick.Extras 1.4
 import QtLocation 5.12
@@ -54,8 +54,6 @@ Item {
 
         //gesture.enabled: true
         //gesture.acceptedGestures: MapGestureArea.PanGesture
-
-
         MouseArea {
             anchors.fill: parent
 
@@ -76,16 +74,7 @@ Item {
                 trackPlaneRefreshTimer.stop()
             }
         }
-
-
-        Component.onCompleted: {
-            console.log("Dimensions: ", width, height)
-        }
     }
-
-
-
-
 
     function addPlane(name) {
         var component = Qt.createComponent("qrc:/qml/Plane.qml")

@@ -12,17 +12,27 @@ from paho.mqtt import client as mqtt
 
 
 hostname = socket.gethostname()
-# reset = False
 
 
 def payload():
-    # global reset
     with FSUIPC() as fsuipc:
-        pause, pitot, ias, vertical_speed, whiskey_compass, stall, overspeed, slip_skid, turn_rate, latitude, longitude,  pitch, roll, heading, heading_sel, altitude_sel, airspeed_sel, eng1_thro_lever, eng1_prop_lever, eng1_mix_lever, elevator_trim, parking_brake, landing_gear, flaps, pressure, mach, fuel_weight, angle_of_attack, side_slip, alternator, battery, avionics, fuel_pump, altitude, sim_stopped = prepared.read()
+        lights, pause, pitot, ias, vertical_speed, whiskey_compass, stall, overspeed, slip_skid, turn_rate, latitude, longitude,  pitch, roll, heading, heading_sel, altitude_sel, airspeed_sel, eng1_thro_lever, eng1_prop_lever, eng1_mix_lever, eng1_magnetos, fuel_selector, elevator_trim, parking_brake, landing_gear, flaps, pressure, mach, fuel_weight, angle_of_attack, side_slip, alternator, battery, avionics, fuel_pump, altitude, sim_stopped = prepared.read()
 
         payload = {
             'name': hostname,
             'time': datetime.datetime.now().strftime('%m/%d %H:%M:%S'),
+            'lights': {
+                'navigation': bool((lights >> 0) & 1),
+                'beacon': bool((lights >> 1) & 1),
+                'landing': bool((lights >> 2) & 1),
+                'taxi': bool((lights >> 3) & 1),
+                'strobes': bool((lights >> 4) & 1),
+                # 'instruments': bool((lights >> 5) & 1),
+                # 'recognition': bool((lights >> 6) & 1),
+                # 'wing': bool((lights >> 7) & 1),
+                # 'logo': bool((lights >> 8) & 1),
+                # 'cabin': bool((lights >> 9) & 1),
+            },
             'pause': bool(pause),
             'reset': bool(pause) and bool(sim_stopped),
             'pitot': bool(pitot),
@@ -45,7 +55,9 @@ def payload():
                 'throttleLever': eng1_thro_lever / 16384 * 100,
                 'propellerLever': eng1_prop_lever / 16384 * 100,
                 'mixtureLever': eng1_mix_lever / 16384 * 100,
+                'magnetos': eng1_magnetos,
             },
+            'fuelSelector': fuel_selector,
             'elevatorTrim': elevator_trim / 16384 * 100,
             'parkingBrake': bool(parking_brake),
             'landingGear': bool(landing_gear),
@@ -62,8 +74,6 @@ def payload():
             'altitude': altitude,
             'simStopped': bool(sim_stopped),
         }
-
-        # print(payload)
 
     return payload
 
@@ -89,13 +99,6 @@ def on_message(client, userdata, msg):
             # "Situation reset" control (65591)
             fsuipc.write([(0x3110, "l", 65591)])
 
-        # global reset
-        # reset = message['reset']
-
-        # while reset == True:
-        #     if prepared.read()[0] == False:
-        #         reset = False
-
 
 def on_publish(client, userdata, mid):
     print("mid: " + str(mid))
@@ -113,6 +116,15 @@ def on_disconnect(client, userdata, rc=0):
 if __name__ == "__main__":
     # client = mqtt.Client(client_id=device_id, protocol=mqtt.MQTTv311)
     client = mqtt.Client()
+
+    # setup last will
+    client.will_set(
+        f"/Devices/{hostname}",
+        json.dumps(payload={'status': "offline"}),
+        qos=0,
+        retain=False
+    )
+
     # Assign event callbacks
     client.on_connect = on_connect
     client.on_message = on_message
@@ -126,7 +138,8 @@ if __name__ == "__main__":
 
     with FSUIPC() as fsuipc:
         prepared = fsuipc.prepare_data([
-            (0x264, "H"),  # Pause Indicator
+            (0xD0C, "h"),  # Lights
+            (0x264, "h"),  # Pause Indicator
             (0x29C, "c"),  # Pitot
             (0x2BC, "d"),  # IAS
             (0x2C8, "d"),  # Vertical Speed
@@ -148,6 +161,8 @@ if __name__ == "__main__":
             (0x88C, "h"),  # Engine 1 Throttle lever
             (0x88E, "h"),  # Engine 1 Propeller lever
             (0x890, "h"),  # Engine 1 Mixture lever
+            (0x892, "h"),  # Engine 1 Magnetos
+            (0xAF8, "h"),  # Fuel Selector
             (0xBC0, "h"),  # Elevator Trim
             (0xBC8, "h"),  # Parking Brake
             (0xBE8, "d"),  # Landing Gear

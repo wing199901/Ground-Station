@@ -109,27 +109,52 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
     elevatorTrim->setProperty("elevatorTrim", json["elevatorTrim"].toDouble());
 
     // MEMO
-    QVariant memoCount;
-
+    QVariant memoKeys;
     QMetaObject::invokeMethod(
         ui->qmlGauge->rootObject(),
-        "countMemo",
-        Q_RETURN_ARG(QVariant, memoCount));
+        "getMemoJsonKeys",
+        Q_RETURN_ARG(QVariant, memoKeys));
 
-    for (int i = 0; i < memoCount.toInt(); i++)
+    //    qDebug() << keys.toList();
+
+    for (int i = 0; i < memoKeys.toList().count(); i++)
     {
-        QVariant key;
         QMetaObject::invokeMethod(
             ui->qmlGauge->rootObject(),
-            "getJsonKey",
-            Q_RETURN_ARG(QVariant, key),
-            Q_ARG(QVariant, QVariant::fromValue(i)));
+            "getMemoJsonKeys",
+            Q_RETURN_ARG(QVariant, memoKeys));
 
         QMetaObject::invokeMethod(
             ui->qmlGauge->rootObject(),
-            "setVisible",
+            "setMemoVisible",
             Q_ARG(QVariant, QVariant::fromValue(i)),
-            Q_ARG(QVariant, QVariant::fromValue(json[key.toString()].toBool())));
+            Q_ARG(QVariant, QVariant::fromValue(json[memoKeys.toList()[i].toString()].toBool())));
+    }
+
+    // Lights
+    QJsonValue lightsValue = json.value("lights");
+    QJsonObject lights = lightsValue.toObject();
+
+    QVariant lightKeys;
+    QMetaObject::invokeMethod(
+        ui->qmlGauge->rootObject(),
+        "getWarningJsonKeys",
+        Q_RETURN_ARG(QVariant, lightKeys));
+
+    qDebug() << lightKeys.toList();
+
+    for (int i = 0; i < lightKeys.toList().count(); i++)
+    {
+        QMetaObject::invokeMethod(
+            ui->qmlGauge->rootObject(),
+            "getWarningJsonKeys",
+            Q_RETURN_ARG(QVariant, lightKeys));
+
+        QMetaObject::invokeMethod(
+            ui->qmlGauge->rootObject(),
+            "setWarningVisible",
+            Q_ARG(QVariant, QVariant::fromValue(i)),
+            Q_ARG(QVariant, QVariant::fromValue(lights[lightKeys.toList()[i].toString()].toBool())));
     }
 
     // Plane
@@ -162,4 +187,9 @@ void DeviceTab::tabSelected(QString tabName)
             "startTrackPlane",
             Q_ARG(QVariant, QVariant::fromValue(plane)));
     }
+}
+
+bool DeviceTab::isPaused()
+{
+    return json["pause"].toBool();
 }

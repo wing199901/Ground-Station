@@ -49,4 +49,5 @@ private slots:
     void on_actionCenter_Map_by_Planes_triggered();
     void on_deviceTabWidget_tabBarClicked(int index);
 };
+
 #endif // MAINWINDOW_H

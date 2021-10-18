@@ -25,8 +25,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->qmlMap->setSource(QUrl("qrc:/qml/qmlMap.qml"));
     ui->qmlMap->setObjectName("qmlMap");
 
-    qDebug() << "OpenSSl Support:" << QSslSocket::supportsSsl();
-
     m_client = new QMqttClient(this);
     //    m_client->setHostname("aerosimmqtt.eastasia.azurecontainer.io");
     m_client->setHostname("192.168.0.128");
@@ -79,6 +77,9 @@ MainWindow::MainWindow(QWidget *parent)
                     emit createPlaneSignal();
 
                     connect(this, SIGNAL(selectTab(QString)), newTab, SLOT(tabSelected(QString)));
+
+                    // Center plane when it created
+                    emit selectTab(newTab->objectName());
                 }
                 // Send json to newTab
                 emitSendJson(json); });
@@ -104,7 +105,7 @@ void MainWindow::brokerDisconnected()
     QMessageBox::critical(
         this, QLatin1String("Error"),
         QLatin1String("Broker disconnected."));
-    QApplication::quit();
+    // QApplication::quit();
 }
 
 void MainWindow::on_actionConnect_triggered()
@@ -174,7 +175,6 @@ QString MainWindow::getCurrentDeviceName()
 void MainWindow::on_deviceTabWidget_currentChanged(int index)
 {
     emit selectTab(ui->deviceTabWidget->widget(index)->objectName());
-
 }
 
 void MainWindow::on_deviceTabWidget_tabBarClicked(int index)
@@ -188,6 +188,3 @@ void MainWindow::on_actionCenter_Map_by_Planes_triggered()
         ui->qmlMap->rootObject(),
         "startTimer");
 }
-
-
-

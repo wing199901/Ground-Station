@@ -12,5 +12,6 @@
         <file>ECAMStyles/qmldir</file>
         <file>qml/speedGauge.qml</file>
         <file>qml/PlanePoly.qml</file>
+        <file>qml/LightSwitchModel.qml</file>
     </qresource>
 </RCC>

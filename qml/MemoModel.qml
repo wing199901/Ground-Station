@@ -1,48 +1,8 @@
-import QtQuick 2.0
+import QtQuick 2.12
 import "../ECAMStyles"
 
 ListModel {
     id: memoModel
-    //    ListElement {
-    //        name: "ALT"
-    //        __color: Colors.green
-    //        __visible: true
-    //    }
-    //    ListElement {
-    //        name: "BAT"
-    //        __color: "#26ff00"
-    //        __visible: true
-    //    }
-    //    ListElement {
-    //        name: "AVIONICS"
-    //        __color: "red"
-    //        __visible: true
-    //    }
-    //    ListElement {
-    //        name: "FUEL PUMP"
-    //        __color: "#26ff00"
-    //        __visible: true
-    //    }
-    //    ListElement {
-    //        name: "PARK BRK"
-    //        __color: "#26ff00"
-    //        __visible: true
-    //    }
-    //    ListElement {
-    //        name: "PITOT HEAT"
-    //        __color: "#26ff00"
-    //        __visible: true
-    //    }
-    //    ListElement {
-    //        name: "LDG LT"
-    //        __color: "#26ff00"
-    //        __visible: true
-    //    }
-    //    ListElement {
-    //        name: "STROBE LT OFF"
-    //        __color: "#26ff00"
-    //        __visible: true
-    //    }
     property bool completed: false
     Component.onCompleted: {
         append({
@@ -95,4 +55,45 @@ ListModel {
                })
         completed = true
     }
+
+    //    ListElement {
+    //        name: "ALT"
+    //        __color: Colors.green
+    //        __visible: true
+    //    }
+    //    ListElement {
+    //        name: "BAT"
+    //        __color: "#26ff00"
+    //        __visible: true
+    //    }
+    //    ListElement {
+    //        name: "AVIONICS"
+    //        __color: "red"
+    //        __visible: true
+    //    }
+    //    ListElement {
+    //        name: "FUEL PUMP"
+    //        __color: "#26ff00"
+    //        __visible: true
+    //    }
+    //    ListElement {
+    //        name: "PARK BRK"
+    //        __color: "#26ff00"
+    //        __visible: true
+    //    }
+    //    ListElement {
+    //        name: "PITOT HEAT"
+    //        __color: "#26ff00"
+    //        __visible: true
+    //    }
+    //    ListElement {
+    //        name: "LDG LT"
+    //        __color: "#26ff00"
+    //        __visible: true
+    //    }
+    //    ListElement {
+    //        name: "STROBE LT OFF"
+    //        __color: "#26ff00"
+    //        __visible: true
+    //    }
 }
