@@ -16,7 +16,7 @@ hostname = socket.gethostname()
 
 def payload():
     with FSUIPC() as fsuipc:
-        lights, pause, pitot, ias, vertical_speed, whiskey_compass, stall, overspeed, slip_skid, turn_rate, latitude, longitude,  pitch, roll, heading, heading_sel, altitude_sel, airspeed_sel, eng1_thro_lever, eng1_prop_lever, eng1_mix_lever, eng1_magnetos, fuel_selector, elevator_trim, parking_brake, landing_gear, flaps, pressure, mach, fuel_weight, angle_of_attack, side_slip, alternator, battery, avionics, fuel_pump, altitude, sim_stopped = prepared.read()
+        lights, pause, pitot, ias, vertical_speed, whiskey_compass, stall, overspeed, slip_skid, turn_rate, latitude, longitude,  pitch, roll, heading, autopilot, heading_sel, altitude_sel, airspeed_sel, eng1_thro_lever, eng1_prop_lever, eng1_mix_lever, eng1_magnetos, fuel_selector, elevator_trim, parking_brake, landing_gear, flaps, pressure, mach, fuel_weight, eng1_rpm, eng1_max_rpm, angle_of_attack, side_slip, alternator, battery, avionics, fuel_pump, flight_director, altitude, sim_stopped = prepared.read()
 
         payload = {
             'name': hostname,
@@ -48,6 +48,7 @@ def payload():
             'pitch': pitch * 360 / (65536*65536)*(-1),
             'roll': roll * 360 / (65536*65536)*(-1),
             'heading': heading * 360 / (65536*65536),
+            'autopilot': autopilot,
             'headingSel': heading_sel / 65536 * 360,
             'altitudeSel': altitude_sel / 65536 * 3.281,
             'airspeedSel': airspeed_sel,
@@ -56,6 +57,8 @@ def payload():
                 'propellerLever': eng1_prop_lever / 16384 * 100,
                 'mixtureLever': eng1_mix_lever / 16384 * 100,
                 'magnetos': eng1_magnetos,
+                'rpm': eng1_rpm,
+                'maxRPM': eng1_max_rpm,
             },
             'fuelSelector': fuel_selector,
             'elevatorTrim': elevator_trim / 16384 * 100,
@@ -67,6 +70,7 @@ def payload():
             'fuelWeight': fuel_weight / 2.205,
             'aoa': math.degrees(angle_of_attack),
             'sideSlip': math.degrees(side_slip),
+            'flightDirector': bool(flight_director),
             'alternator': bool(alternator),
             'battery': bool(battery),
             'avionics': bool(avionics),
@@ -120,7 +124,7 @@ if __name__ == "__main__":
     # setup last will
     client.will_set(
         f"/Devices/{hostname}",
-        json.dumps(payload={'status': "offline"}),
+        json.dumps({'status': "offline", }),
         qos=0,
         retain=False
     )
@@ -155,6 +159,7 @@ if __name__ == "__main__":
             (0x578, "d"),  # Pitch
             (0x57C, "d"),  # Roll
             (0x580, "d"),  # Heading
+            (0x7BC, "d"),  # Autopilot
             (0x7CC, "d"),  # Heading Sel
             (0x7D4, "d"),  # Altitude Sel
             (0x7E2, "d"),  # Airspeed Sel
@@ -170,8 +175,11 @@ if __name__ == "__main__":
             (0xEC6, "d"),  # Pressure
             (0x11C6, "d"),  # Mach
             (0x126C, "d"),  # Fuel Weight
+            (0x2400, "l"),  # Engine 1 RPM
+            (0x2408, "l"),  # Engine 1 Maximum RPM
             (0x2ED0, "f"),  # Angle of Attack
             (0x2ED8, "f"),  # Side Slip Angle
+            (0x2EE0, "d"),  # Flight Director
             (0x3101, "c"),  # Alternator
             (0x3102, "c"),  # Battery
             (0x3103, "c"),  # Avionics Master

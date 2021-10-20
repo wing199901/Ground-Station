@@ -32,46 +32,22 @@ Item {
             rows: 0
             columns: 3
 
-            CircularGauge {
-                id: throttleMeter
-                width: height
-                height: container.height * 0.25
-                value: throttleLever
-                property double throttleLever: 0
-
-                style: QuadrantIndicatorStyle {
-                    label: "Throttle"
-                }
-                objectName: "throttleMeter"
-                maximumValue: 100
+            LeverGauge {
+                id: throttleLeverGauge
+                objectName: "throttleLeverGauge"
+                label: "Throttle"
             }
 
-            CircularGauge {
-                id: propellerMeter
-                width: height
-                height: container.height * 0.25
-                value: propellerLever
-                style: QuadrantIndicatorStyle {
-                    label: "Propeller"
-                }
-                objectName: "propellerMeter"
-                property double propellerLever: 0
-
-                maximumValue: 100
+            LeverGauge {
+                id: propellerLeverGauge
+                objectName: "propellerLeverGauge"
+                label: "Propeller"
             }
 
-            CircularGauge {
-                id: mixtureMeter
-                width: height
-                height: container.height * 0.25
-                value: mixtureLever
-                style: QuadrantIndicatorStyle {
-                    label: "Mixture"
-                }
-                property double mixtureLever: 0
-                x: 260
-                objectName: "mixtureMeter"
-                maximumValue: 100
+            LeverGauge {
+                id: mixtureLeverGauge
+                objectName: "mixtureLeverGauge"
+                label: "Mixture"
             }
         }
 
@@ -120,7 +96,8 @@ Item {
         }
 
         Text {
-            objectName: "fuelWeight"
+            id: fuelWeightText
+            objectName: "fuelWeight" // @disable-check M16
             property int fuelWeight: 0
             x: 449
             y: 169
@@ -136,7 +113,8 @@ Item {
         }
 
         Text {
-            objectName: "flaps"
+            id: flapsText
+            objectName: "flaps" // @disable-check M16
             property int flaps: 0
             x: 414
             y: 280
@@ -148,137 +126,32 @@ Item {
             horizontalAlignment: Text.AlignHCenter
         }
 
-        CircularGauge {
+        ElevatorTrimGauge {
             id: elevatorTrimGauge
-            objectName: "elevatorTrim"
-            property double elevatorTrim: 0
+            objectName: "elevatorTrimGauge"
+
             x: 379
             y: -7
-            width: 152
-            height: 152
-            minimumValue: -100
-            maximumValue: 100
-            value: elevatorTrim
+        }
 
-            style: CircularGaugeStyle {
-                minimumValueAngle: 125
-                maximumValueAngle: 55
-                tickmarkStepSize: 100
-                tickmark: Rectangle {
-                    implicitWidth: outerRadius * 0.07
-                    implicitHeight: outerRadius * 0.2
-                    color: "white"
-                    antialiasing: true
-                }
-                tickmarkLabel: null
-                minorTickmark: Rectangle {
-                    implicitWidth: outerRadius * 0.03
-                    implicitHeight: outerRadius * 0.1
-                    color: "white"
-                    antialiasing: true
-                }
-                minorTickmarkCount: 1
-                needle: Rectangle {
-                    y: outerRadius * 0.15
-                    implicitWidth: outerRadius * 0.05
-                    implicitHeight: outerRadius * 0.95
-                    antialiasing: true
-                    color: "#e5e5e5"
-                }
-            }
+        FuelSelectorGauge {
+            id: fuelSelectorGauge
+            objectName: "fuelSelectorGauge"
 
-            Text {
-                id: up
-                x: 135
-                y: 37
-                text: "UP"
-                color: "white"
-                font.bold: true
-                font.family: "B612"
-                font.pixelSize: 12
-            }
+            x: 39
+            y: 161
+            width: 138
+            height: 138
+        }
 
-            Text {
-                id: down
-                x: 135
-                y: 100
-                text: "DN"
-                color: "white"
-                font.bold: true
-                font.family: "B612"
-                font.pixelSize: 12
-            }
+        MagnetoGauge {
+            id: magnetoGauge
+            objectName: "magnetoGauge"
 
-            Text {
-                id: t
-                x: 94
-                y: 38
-                text: "T"
-                color: "white"
-                font.bold: true
-                font.family: "B612"
-                font.pixelSize: 12
-                horizontalAlignment: Text.AlignHCenter
-            }
-            Text {
-                id: r
-                x: 94
-                y: 49
-                text: "R"
-                color: "white"
-                font.bold: true
-                font.family: "B612"
-                font.pixelSize: 12
-                horizontalAlignment: Text.AlignHCenter
-            }
-            Text {
-                id: i
-                x: 94
-                y: 59
-                width: 8
-                height: 15
-                text: "I"
-                color: "white"
-                font.bold: true
-                font.family: "B612"
-                font.pixelSize: 12
-                horizontalAlignment: Text.AlignHCenter
-            }
-            Text {
-                id: m
-                x: 93
-                y: 70
-                text: "M"
-                color: "white"
-                font.bold: true
-                font.family: "B612"
-                font.pixelSize: 12
-                horizontalAlignment: Text.AlignHCenter
-            }
-
-            Text {
-                id: upArrow
-                x: 93
-                y: 91
-                text: "↑"
-                color: "white"
-                font.bold: true
-                font.family: "B612"
-                font.pixelSize: 12
-                horizontalAlignment: Text.AlignHCenter
-            }
-
-            Text {
-                id: downArrow
-                x: 93
-                y: 100
-                text: "↓"
-                color: "white"
-                font.bold: true
-                font.family: "B612"
-                font.pixelSize: 12
-                horizontalAlignment: Text.AlignHCenter
-            }
+            x: 196
+            y: 167
+            width: 138
+            height: 138
         }
     }
 
@@ -318,3 +191,10 @@ Item {
         }
     }
 }
+
+/*##^##
+Designer {
+    D{i:0;formeditorZoom:0.75}
+}
+##^##*/
+

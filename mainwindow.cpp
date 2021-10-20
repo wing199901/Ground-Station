@@ -67,6 +67,9 @@ MainWindow::MainWindow(QWidget *parent)
 
                     ui->deviceTabWidget->setCurrentIndex(ui->deviceTabWidget->indexOf(newTab));
 
+                    //Set background color to black
+                    ui->deviceTabWidget->setStyleSheet("background-color:#5B686D;");
+
                     // Connection between newTab and device json
                     connect(this, SIGNAL(sendJson(QJsonObject)), newTab, SLOT(recieveJson(QJsonObject)));
 

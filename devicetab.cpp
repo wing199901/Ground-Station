@@ -90,14 +90,14 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
     QJsonValue eng1Value = json.value("eng1");
     QJsonObject eng1 = eng1Value.toObject();
 
-    QObject *throttleMeter = ui->qmlGauge->rootObject()->findChild<QObject *>("throttleMeter");
-    throttleMeter->setProperty("throttleLever", eng1["throttleLever"].toDouble());
+    QObject *throttleLeverGauge = ui->qmlGauge->rootObject()->findChild<QObject *>("throttleLeverGauge");
+    throttleLeverGauge->setProperty("leverValue", eng1["throttleLever"].toDouble());
 
-    QObject *propellerMeter = ui->qmlGauge->rootObject()->findChild<QObject *>("propellerMeter");
-    propellerMeter->setProperty("propellerLever", eng1["propellerLever"].toDouble());
+    QObject *propellerLeverGauge = ui->qmlGauge->rootObject()->findChild<QObject *>("propellerLeverGauge");
+    propellerLeverGauge->setProperty("leverValue", eng1["propellerLever"].toDouble());
 
-    QObject *mixtureMeter = ui->qmlGauge->rootObject()->findChild<QObject *>("mixtureMeter");
-    mixtureMeter->setProperty("mixtureLever", eng1["mixtureLever"].toDouble());
+    QObject *mixtureLeverGauge = ui->qmlGauge->rootObject()->findChild<QObject *>("mixtureLeverGauge");
+    mixtureLeverGauge->setProperty("leverValue", eng1["mixtureLever"].toDouble());
 
     QObject *fuelWeight = ui->qmlGauge->rootObject()->findChild<QObject *>("fuelWeight");
     fuelWeight->setProperty("fuelWeight", json["fuelWeight"].toDouble());
@@ -105,8 +105,30 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
     QObject *flaps = ui->qmlGauge->rootObject()->findChild<QObject *>("flaps");
     flaps->setProperty("flaps", json["flaps"].toDouble());
 
-    QObject *elevatorTrim = ui->qmlGauge->rootObject()->findChild<QObject *>("elevatorTrim");
-    elevatorTrim->setProperty("elevatorTrim", json["elevatorTrim"].toDouble());
+    QObject *elevatorTrimGauge = ui->qmlGauge->rootObject()->findChild<QObject *>("elevatorTrimGauge");
+    elevatorTrimGauge->setProperty("elevatorTrim", json["elevatorTrim"].toDouble());
+
+    QObject *fuelSelectorGauge = ui->qmlGauge->rootObject()->findChild<QObject *>("fuelSelectorGauge");
+
+    int fuelSelectorGaugeValue;
+
+    switch (json["fuelSelector"].toInt())
+    {
+    case 1:
+        fuelSelectorGaugeValue = 2;
+        break;
+    case 2:
+        fuelSelectorGaugeValue = 1;
+        break;
+    default:
+        fuelSelectorGaugeValue = json["fuelSelector"].toInt();
+        break;
+    }
+
+    fuelSelectorGauge->setProperty("fuelSelector", fuelSelectorGaugeValue);
+
+    QObject *magnetoGauge = ui->qmlGauge->rootObject()->findChild<QObject *>("magnetoGauge");
+    magnetoGauge->setProperty("magneto", eng1["magnetos"].toDouble());
 
     // MEMO
     QVariant memoKeys;
@@ -114,8 +136,6 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
         ui->qmlGauge->rootObject(),
         "getMemoJsonKeys",
         Q_RETURN_ARG(QVariant, memoKeys));
-
-    //    qDebug() << keys.toList();
 
     for (int i = 0; i < memoKeys.toList().count(); i++)
     {
@@ -140,8 +160,6 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
         ui->qmlGauge->rootObject(),
         "getWarningJsonKeys",
         Q_RETURN_ARG(QVariant, lightKeys));
-
-    qDebug() << lightKeys.toList();
 
     for (int i = 0; i < lightKeys.toList().count(); i++)
     {

@@ -4,7 +4,6 @@
         <file>qml/qmlGauge.qml</file>
         <file>qml/qmlMap.qml</file>
         <file>qml/Plane.qml</file>
-        <file>qml/QuadrantIndicatorStyle.qml</file>
         <file>image/ecam_background.svg</file>
         <file>qml/WarningModel.qml</file>
         <file>qml/MemoModel.qml</file>
@@ -13,5 +12,16 @@
         <file>qml/speedGauge.qml</file>
         <file>qml/PlanePoly.qml</file>
         <file>qml/LightSwitchModel.qml</file>
+        <file>qml/ElevatorTrimGauge.qml</file>
+        <file>image/fuelselector-knob.png</file>
+        <file>image/fuelselector-bg-transparent.png</file>
+        <file>image/fuelselector-bg-transparent.svg</file>
+        <file>image/fuelselector-knob.svg</file>
+        <file>qml/FuelSelectorGauge.qml</file>
+        <file>qml/LeverGauge.qml</file>
+        <file>image/fuelselector-dial-bg.svg</file>
+        <file>image/fuelselector-needle.svg</file>
+        <file>qml/MagnetoGauge.qml</file>
+        <file>image/magneto-markings.svg</file>
     </qresource>
 </RCC>
