@@ -1,9 +1,9 @@
-#Ground Station - a flight monitor for flight simulators
-##Using MQTT as the main protocol
+# Ground Station - a flight monitor for flight simulators
+## Using MQTT as the main protocol
 [![](https://i1.wp.com/randomnerdtutorials.com/wp-content/uploads/2020/10/ESP8266-NodeMCU-Overview-MQTT-Publish-BME680-Temperature-Humidity-Pressure-Gas-Readings.png?w=862&quality=100&strip=all&ssl=1)](https://i1.wp.com/randomnerdtutorials.com/wp-content/uploads/2020/10/ESP8266-NodeMCU-Overview-MQTT-Publish-BME680-Temperature-Humidity-Pressure-Gas-Readings.png?w=862&quality=100&strip=all&ssl=1)
-##MQTT Broker
+## MQTT Broker
 We use [eclipse-mosquitto](https://hub.docker.com/_/eclipse-mosquitto "eclipse-mosquitto") as Broker
-###Quickstart
+### Quickstart
 1. SSH to Raspberry Pi:
 ```bash
  ssh ubuntu@192.168.0.128
@@ -20,9 +20,9 @@ docker run -it -p 1883:1883 -v mosquitto.conf:/mosquitto/config/mosquitto.conf -
 ```
 3. Done.
 
-##Publish Side (P3D)
+## Publish Side (P3D)
 You can find files in Publish folder. To build it, you need a Windows machine.
-###Quickstart
+### Quickstart
 1. Install [PyInstaller](https://www.pyinstaller.org/ "PyInstaller") from PyPI on a Windows machine:
 ```bash
 pip install pyinstaller
@@ -38,7 +38,7 @@ You can find an existing .exe in Ground-Station/Publish/dist/
 4. Copy it to Console 40 or Model A.
 5. Run the .exe
 
-##Subscribe Side (Ground Station)
+## Subscribe Side (Ground Station)
 You can find files in root folder. To Open this Qt project, you need to install Qt5 into your system first.
 
 We are using Qt 5.12.11 as our main development version. In order to use MQTT in Qt, you need to install qtmqtt to your system manually. You can find install files in the below link:
@@ -54,7 +54,7 @@ Tutorial for macOS:
 https://blog.csdn.net/yc__coder/article/details/106956760
 ```
 
-##Target
+## Target
 - Runs on macOS or Windows
 - Simply unzip and run – no installation required
 - OpenStreetMaps interface
