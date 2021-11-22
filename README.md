@@ -41,7 +41,7 @@ You can find an existing .exe in Ground-Station/Publish/dist/
 ## Subscribe Side (Ground Station)
 You can find files in root folder. To Open this Qt project, you need to install Qt5 into your system first.
 
-We are using Qt 5.12.11 as our main development version. In order to use MQTT in Qt, you need to install qtmqtt to your system manually. You can find install files in the below link:
+We are using **Qt 5.12.11** as our main development version. In order to use MQTT in Qt, you need to install **qtmqtt** to your system manually. You can find install files in the below link:
 ```
 https://github.com/qt/qtmqtt/tree/5.12.11
 ```
@@ -53,6 +53,8 @@ Tutorial for macOS:
 ```
 https://blog.csdn.net/yc__coder/article/details/106956760
 ```
+### Quickstart
+To open project at Qt, just double click **Ground-Station.pro**.
 
 ## Target
 - Runs on macOS or Windows
