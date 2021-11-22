@@ -4,10 +4,25 @@ import QtQuick.Controls 2.4
 import QtQuick.Extras 1.4
 import QtLocation 5.12
 import QtPositioning 5.12
+import QtGraphicalEffects 1.0
 
 Item {
     width: 500
     height: 500
+
+    layer.enabled: true
+    layer.effect: OpacityMask {
+        maskSource: Item {
+            width: map.width
+            height: map.height
+            Rectangle {
+                anchors.centerIn: parent
+                width: map.adapt ? map.width : Math.min(map.width, map.height)
+                height: map.adapt ? map.height : width
+                radius: 12
+            }
+        }
+    }
 
     Timer {
         id: mapCenterRefreshTimer

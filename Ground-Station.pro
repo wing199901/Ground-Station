@@ -11,16 +11,19 @@ CONFIG += c++11 sdk_no_version_check
 SOURCES += \
     devicetab.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    summarytab.cpp
 
 HEADERS += \
     devicetab.h \
-    mainwindow.h
+    mainwindow.h \
+    summarytab.h
 
 FORMS += \
     devicetab.ui \
     mainwindow.ui \
-    mainwindow_copy.ui
+    mainwindow_copy.ui \
+    summarytab.ui
 
 include(qfi/qfi.pri)
 

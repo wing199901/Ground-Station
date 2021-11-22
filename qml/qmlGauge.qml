@@ -153,6 +153,16 @@ Item {
             width: 138
             height: 138
         }
+
+        Joystick {
+            id: joystick
+            objectName: "joystick" // @disable-check M16
+
+            x: 172
+            y: 381
+            width: 138
+            height: 138
+        }
     }
 
     function getMemoJsonKeys() {

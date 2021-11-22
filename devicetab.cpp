@@ -13,7 +13,7 @@ DeviceTab::DeviceTab(QWidget *parent)
 
     auto gauge = ui->qmlGauge;
     gauge->setAttribute(Qt::WA_AlwaysStackOnTop);
-    gauge->setAttribute(Qt::WA_TranslucentBackground);
+    gauge->setAttribute(Qt::WA_TranslucentBackground, true);
     gauge->setClearColor(Qt::transparent);
     gauge->setSource(QUrl("qrc:/qml/qmlGauge.qml"));
 }
@@ -72,11 +72,12 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
     ui->graphicsEADI->setAltitude(json["altitude"].toDouble());
     ui->graphicsEADI->setAltitudeSel(json["altitudeSel"].toDouble());
     ui->graphicsEADI->setClimbRate(json["verticalSpeed"].toDouble() / 1000);
+    ui->graphicsEADI->setFltMode(json["autopilot"].toBool() ? qfi_EADI::FltMode::CMD : qfi_EADI::FltMode::Off);
     ui->graphicsEADI->setHeading(json["heading"].toDouble());
     ui->graphicsEADI->setHeadingSel(json["headingSel"].toDouble());
     ui->graphicsEADI->setMachNo(json["mach"].toDouble());
     ui->graphicsEADI->setOverspeed(json["overspeed"].toBool() || json["ias"].toDouble() > 255);
-    ui->graphicsEADI->setPause(json["pause"].toBool());
+    ui->graphicsEADI->setPause(json["status"].toString() == "pausing");
     ui->graphicsEADI->setPitch(json["pitch"].toDouble());
     ui->graphicsEADI->setPressure(json["pressure"].toDouble(), qfi_EADI::PressureMode::MB);
     ui->graphicsEADI->setRoll(json["roll"].toDouble());
@@ -129,6 +130,14 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
 
     QObject *magnetoGauge = ui->qmlGauge->rootObject()->findChild<QObject *>("magnetoGauge");
     magnetoGauge->setProperty("magneto", eng1["magnetos"].toDouble());
+
+    // Joystick
+    QObject *joystick = ui->qmlGauge->rootObject()->findChild<QObject *>("joystick");
+    QMetaObject::invokeMethod(
+        joystick,
+        "joystickOnAction",
+        Q_ARG(QVariant, json["aileronAxis"].toDouble()),
+        Q_ARG(QVariant, json["elevatorAxis"].toDouble()));
 
     // MEMO
     QVariant memoKeys;
@@ -187,7 +196,8 @@ void DeviceTab::recieveJson(QJsonObject m_Json)
         Q_ARG(QVariant, QVariant::fromValue(json["latitude"].toDouble())),
         Q_ARG(QVariant, QVariant::fromValue(json["longitude"].toDouble())));
 
-    if (json["reset"].toBool())
+    // When reset, delete poly
+    if (json["status"].toString() == "reseting")
     {
         QMetaObject::invokeMethod(
             planePoly,
@@ -209,5 +219,5 @@ void DeviceTab::tabSelected(QString tabName)
 
 bool DeviceTab::isPaused()
 {
-    return json["pause"].toBool();
+    return json["status"].toString() == "pausing";
 }

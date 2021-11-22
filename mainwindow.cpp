@@ -58,7 +58,7 @@ MainWindow::MainWindow(QWidget *parent)
                     DeviceTab *newTab = new DeviceTab();
                     newTab->setObjectName(newDeviceName);
 
-                    // Apple align center to newTab
+                    // Apply align center to newTab
                     QBoxLayout *newTabLayout = new QBoxLayout(QBoxLayout::LeftToRight, newTab);
                     newTabLayout->addWidget(newTab, Qt::AlignCenter);
 
@@ -66,9 +66,6 @@ MainWindow::MainWindow(QWidget *parent)
                     ui->deviceTabWidget->insertTab(ui->deviceTabWidget->currentIndex() + 1, newTab, newDeviceName);
 
                     ui->deviceTabWidget->setCurrentIndex(ui->deviceTabWidget->indexOf(newTab));
-
-                    //Set background color to black
-                    ui->deviceTabWidget->setStyleSheet("background-color:#5B686D;");
 
                     // Connection between newTab and device json
                     connect(this, SIGNAL(sendJson(QJsonObject)), newTab, SLOT(recieveJson(QJsonObject)));
@@ -85,7 +82,9 @@ MainWindow::MainWindow(QWidget *parent)
                     emit selectTab(newTab->objectName());
                 }
                 // Send json to newTab
-                emitSendJson(json); });
+                emitSendJson(json); }
+
+    );
 }
 
 MainWindow::~MainWindow()

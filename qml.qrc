@@ -23,5 +23,8 @@
         <file>image/fuelselector-needle.svg</file>
         <file>qml/MagnetoGauge.qml</file>
         <file>image/magneto-markings.svg</file>
+        <file>qml/Joystick.qml</file>
+        <file>image/finger.png</file>
+        <file>image/background.png</file>
     </qresource>
 </RCC>

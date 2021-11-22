@@ -15,8 +15,9 @@ hostname = socket.gethostname()
 
 
 def payload():
+
     with FSUIPC() as fsuipc:
-        lights, pause, pitot, ias, vertical_speed, whiskey_compass, stall, overspeed, slip_skid, turn_rate, latitude, longitude,  pitch, roll, heading, autopilot, heading_sel, altitude_sel, airspeed_sel, eng1_thro_lever, eng1_prop_lever, eng1_mix_lever, eng1_magnetos, fuel_selector, elevator_trim, parking_brake, landing_gear, flaps, pressure, mach, fuel_weight, eng1_rpm, eng1_max_rpm, angle_of_attack, side_slip, alternator, battery, avionics, fuel_pump, flight_director, altitude, sim_stopped = prepared.read()
+        lights, pause, pitot, ias, vertical_speed, whiskey_compass, stall, overspeed, slip_skid, turn_rate, pitch, roll, heading, autopilot, heading_sel, altitude_sel, airspeed_sel, eng1_thro_lever, eng1_prop_lever, eng1_mix_lever, eng1_magnetos, fuel_selector, elevator_trim, parking_brake, landing_gear, flaps, pressure, mach, fuel_weight, eng1_rpm, eng1_max_rpm, angle_of_attack, side_slip, flight_director, flight_director_pitch, flight_director_bank, alternator, battery, avionics, fuel_pump,  altitude, elevator_axis, aileron_axis, sim_in_menu, latitude, longitude = prepared.read()
 
         payload = {
             'name': hostname,
@@ -33,8 +34,6 @@ def payload():
                 # 'logo': bool((lights >> 8) & 1),
                 # 'cabin': bool((lights >> 9) & 1),
             },
-            'pause': bool(pause),
-            'reset': bool(pause) and bool(sim_stopped),
             'pitot': bool(pitot),
             'ias': ias / 128,
             'verticalSpeed': vertical_speed * 60 * 3.28084 / 256,
@@ -43,12 +42,10 @@ def payload():
             'overspeed': bool(overspeed),
             'slipSkid': slip_skid,
             'turnRate': turn_rate,
-            'latitude': latitude * 90.0/(10001750.0 * 65536.0 * 65536.0),
-            'longitude': longitude * 360.0/(65536.0 * 65536.0 * 65536.0 * 65536.0),
             'pitch': pitch * 360 / (65536*65536)*(-1),
             'roll': roll * 360 / (65536*65536)*(-1),
             'heading': heading * 360 / (65536*65536),
-            'autopilot': autopilot,
+            'autopilot': bool(autopilot),
             'headingSel': heading_sel / 65536 * 360,
             'altitudeSel': altitude_sel / 65536 * 3.281,
             'airspeedSel': airspeed_sel,
@@ -71,15 +68,32 @@ def payload():
             'aoa': math.degrees(angle_of_attack),
             'sideSlip': math.degrees(side_slip),
             'flightDirector': bool(flight_director),
+            'flightDirectorPitch': flight_director_pitch,
+            'flightDirectorBank': flight_director_bank,
             'alternator': bool(alternator),
             'battery': bool(battery),
             'avionics': bool(avionics),
             'fuelPump': bool(fuel_pump),
             'altitude': altitude,
-            'simStopped': bool(sim_stopped),
+            'elevatorAxis': elevator_axis,
+            'aileronAxis': aileron_axis,
+            'latitude': latitude,
+            'longitude': longitude,
+            'status': getStatus(pause, sim_in_menu),
         }
 
     return payload
+
+
+def getStatus(pause, sim_in_menu):
+    if bool(pause) and bool(sim_in_menu):
+        return "reseting"
+    elif bool(pause):
+        return "pausing"
+    elif bool(sim_in_menu):
+        return "in_menu"
+    else:
+        return "normal"
 
 
 def on_connect(client, userdata, flags, rc):
@@ -147,15 +161,11 @@ if __name__ == "__main__":
             (0x29C, "c"),  # Pitot
             (0x2BC, "d"),  # IAS
             (0x2C8, "d"),  # Vertical Speed
-            (0x2CC, "l"),  # Whiskey Compass
+            (0x2CC, "f"),  # Whiskey Compass
             (0x36C, "c"),  # Stall
             (0x36D, "c"),  # Overspeed
             (0x36E, "c"),  # Slip Skid
-            # (0x372, "h"),  # Reliability
             (0x37C, "h"),  # Turn Rate
-            # (0x55C, "d"),  # Init
-            (0x560, "l"),  # Latitude
-            (0x568, "l"),  # Longitude
             (0x578, "d"),  # Pitch
             (0x57C, "d"),  # Roll
             (0x580, "d"),  # Heading
@@ -175,18 +185,23 @@ if __name__ == "__main__":
             (0xEC6, "d"),  # Pressure
             (0x11C6, "d"),  # Mach
             (0x126C, "d"),  # Fuel Weight
-            (0x2400, "l"),  # Engine 1 RPM
-            (0x2408, "l"),  # Engine 1 Maximum RPM
+            (0x2400, "f"),  # Engine 1 RPM
+            (0x2408, "f"),  # Engine 1 Maximum RPM
             (0x2ED0, "f"),  # Angle of Attack
             (0x2ED8, "f"),  # Side Slip Angle
             (0x2EE0, "d"),  # Flight Director
+            (0x2EE8, "f"),  # Flight Director Pitch
+            (0x2EF0, "f"),  # Flight Director Bank
             (0x3101, "c"),  # Alternator
             (0x3102, "c"),  # Battery
             (0x3103, "c"),  # Avionics Master
             (0x3104, "c"),  # Fuel Pump
             (0x3324, "d"),  # Altitude
+            (0x3328, "h"),  # Elevator Axis
+            (0x332A, "h"),  # Aileron Axis
             (0x3365, "c"),  # In Menu or Dialog
-            # (0x3BF8, "h"),  # Number of Flaps
+            (0x6010, "f"),  # Latitude
+            (0x6018, "f"),  # Longitude
         ], True)
 
     while True:
