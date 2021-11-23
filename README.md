@@ -15,8 +15,7 @@ Password is stick on the Pi, It locate on my table
 ```
 3. Docker run:
 ```bash
-docker run -it -p 1883:1883 -v mosquitto.conf:/mosquitto/config/mosquitto.conf -v /mosquitto/data -v /mosquitto/log eclipse-mosquitto
-(I am not confirmed, press up arrow in terminal to find history )
+docker run -d -p 1883:1883 eclipse-mosquitto:1.6.15
 ```
 3. Done.
 
