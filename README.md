@@ -15,8 +15,7 @@ Password is stick on the Pi, It locate on my table
 ```
 3. Docker run:
 ```bash
-docker run -it -p 1883:1883 -v mosquitto.conf:/mosquitto/config/mosquitto.conf -v /mosquitto/data -v /mosquitto/log eclipse-mosquitto
-(I am not confirmed, press up arrow in terminal to find history )
+docker run -d -p 1883:1883 eclipse-mosquitto:1.6.15
 ```
 3. Done.
 
@@ -55,6 +54,16 @@ https://blog.csdn.net/yc__coder/article/details/106956760
 ```
 ### Quickstart
 To open project at Qt, just double click **Ground-Station.pro**.
+
+### User Guide
+![image](https://user-images.githubusercontent.com/13567466/142921195-85bce5e2-ce6a-47f6-92ac-deebd7c7e96f.png)
+
+1. Press 'MQTT' tab on the menu bar, then press 'connect' and 'subscribe'.
+2. You can find more control at the 'Control' tab.
+
+### File Sturct
+![螢幕截圖 2021-11-23 03 16 39](https://user-images.githubusercontent.com/13567466/142922249-21d1d7ff-1ae1-479f-b8d8-154c228acdfa.png)
+
 
 ## Target
 - Runs on macOS or Windows
