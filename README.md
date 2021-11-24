@@ -69,7 +69,7 @@ To open project at Qt, just double click **Ground-Station.pro**.
 - Runs on macOS or Windows
 - Simply unzip and run – no installation required
 - OpenStreetMaps interface
-- Support for Prepar3D 5
+- Support for Prepar3D v5
 - PFD, MFD and Fuel panel with aircraft-specific details
 - Full logbook of flights, with many reports
 - PDF chart viewer
