@@ -27,23 +27,23 @@ cur = conn.cursor()
 
 
 CreateDevice="""                   
-create table Device ( DeviceId INTEGER AUTO_INCREMENT, Name TEXT, PRIMARY KEY(DeviceId) );
+create table Device (id INTEGER AUTO_INCREMENT, Name TEXT, PRIMARY KEY(id));
 """
 
 CreateSession="""                   
 create table Session (
-    SessionID INTEGER AUTO_INCREMENT,
+    id INTEGER AUTO_INCREMENT,
 	StartTime DATETIME,
-	PRIMARY KEY(SessionID)
+	PRIMARY KEY(id)
 );
 """
 
 CreateSessionDevice = """
 create table SessionDevice(     
-    SessionId INTEGER,     
-    DeviceId INTEGER,    
-    FOREIGN KEY(DeviceId) REFERENCES Device(DeviceId),     
-    FOREIGN KEY(SessionId) REFERENCES Session(SessionId)
+    sessionid INTEGER,     
+    deviceid INTEGER,    
+    FOREIGN KEY(deviceid) REFERENCES Device(id),     
+    FOREIGN KEY(sessionid) REFERENCES Session(id)
 );
 """
 
@@ -51,9 +51,9 @@ create table SessionDevice(
 
 CreateData="""                   
 create table Data (
-  Id              INTEGER AUTO_INCREMENT,
-  SessionId       integer,
-  DeviceId        integer,
+  id              INTEGER AUTO_INCREMENT,
+  sessionId       integer,
+  deviceId        integer,
   time            DATETIME,
   beacon          BOOL,
   landing         BOOL,
@@ -100,8 +100,8 @@ create table Data (
   longitude       DOUBLE,
   status          TEXT,
   PRIMARY KEY(Id),
-  FOREIGN KEY(SessionId) REFERENCES Session(SessionId),
-  FOREIGN KEY(DeviceId) REFERENCES Device(DeviceId)
+  FOREIGN KEY(sessionid) REFERENCES Session(id),
+  FOREIGN KEY(deviceid) REFERENCES Device(id)
 );
 """
 # Try to execute the clauses in mysql, they have to be separated since one statement containing all of the clause will give error
