@@ -27,11 +27,11 @@ cur = conn.cursor()
 
 
 CreateDevice="""                   
-create table Device (id INTEGER AUTO_INCREMENT, Name TEXT, PRIMARY KEY(id));
+create table device (id INTEGER AUTO_INCREMENT, Name TEXT, PRIMARY KEY(id));
 """
 
 CreateSession="""                   
-create table Session (
+create table session (
     id INTEGER AUTO_INCREMENT,
 	StartTime DATETIME,
 	PRIMARY KEY(id)
@@ -39,18 +39,18 @@ create table Session (
 """
 
 CreateSessionDevice = """
-create table SessionDevice(     
+create table session_device(     
     sessionid INTEGER,     
     deviceid INTEGER,    
-    FOREIGN KEY(deviceid) REFERENCES Device(id),     
-    FOREIGN KEY(sessionid) REFERENCES Session(id)
+    FOREIGN KEY(deviceid) REFERENCES device(id),     
+    FOREIGN KEY(sessionid) REFERENCES session(id)
 );
 """
 
 
 
 CreateData="""                   
-create table Data (
+create table data (
   id              INTEGER AUTO_INCREMENT,
   sessionId       integer,
   deviceId        integer,
@@ -100,8 +100,8 @@ create table Data (
   longitude       DOUBLE,
   status          TEXT,
   PRIMARY KEY(Id),
-  FOREIGN KEY(sessionid) REFERENCES Session(id),
-  FOREIGN KEY(deviceid) REFERENCES Device(id)
+  FOREIGN KEY(sessionid) REFERENCES session(id),
+  FOREIGN KEY(deviceid) REFERENCES device(id)
 );
 """
 # Try to execute the clauses in mysql, they have to be separated since one statement containing all of the clause will give error
