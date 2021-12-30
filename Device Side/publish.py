@@ -87,7 +87,7 @@ def payload():
 
 def getStatus(pause, sim_in_menu):
     if bool(pause) and bool(sim_in_menu):
-        return "reseting"
+        return "resetting"
     elif bool(pause):
         return "pausing"
     elif bool(sim_in_menu):
