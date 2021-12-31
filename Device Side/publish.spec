@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(['publish.py'],
-             pathex=['Z:\\Desktop\\Ground Station\\Publish'],
+             pathex=['C:\\Users\\user\\Desktop\\Ground-Station\\Device Side'],
              binaries=[],
              datas=[],
              hiddenimports=['paho','fsuipc'],

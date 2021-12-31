@@ -152,7 +152,7 @@ if __name__ == "__main__":
 
     # Connect to the Broker
     # client.connect('aerosimmqtt.eastasia.azurecontainer.io', 1883, 60)
-    client.connect('192.168.0.128', 1883, 60)
+    client.connect('192.168.0.233', 1883, 60)
 
     with FSUIPC() as fsuipc:
         prepared = fsuipc.prepare_data([
