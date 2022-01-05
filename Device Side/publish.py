@@ -21,7 +21,7 @@ def payload():
 
         payload = {
             'name': hostname,
-            'time': datetime.datetime.now().strftime('%m/%d %H:%M:%S'),
+            'time': datetime.datetime.now().strftime('%Y %m/%d %H:%M:%S'),
             'lights': {
                 'navigation': bool((lights >> 0) & 1),
                 'beacon': bool((lights >> 1) & 1),

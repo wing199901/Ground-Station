@@ -42,26 +42,26 @@ def add_device_to_session():
     return ""
 
 
-@app.route('/new_device', methods=['POST'])
-# register new device
-def new_device():
-    device = str(request.args.get('device_id'))
+# @app.route('/new_device', methods=['POST'])
+# # register new device
+# def new_device():
+#     device = str(request.args.get('device_id'))
 
-# device id must be 3 letters or 4 letters
-    if not len(device) > 5 | len(device) < 3:
-        return "Not a propre device id."
+# # device id must be 3 letters or 4 letters
+#     if not len(device) > 5 | len(device) < 3:
+#         return "Not a propre device id."
 
-    name = "CONSOLE40-" + device if len(device) > 3 else "MODELA-" + device
+#     name = "CONSOLE40-" + device if len(device) > 3 else "MODELA-" + device
 
-    sql = f"SELECT * FROM device WHERE id = '{device}';"
-    data = mysql.db.select_db(sql)
+#     sql = f"SELECT * FROM device WHERE id = '{device}';"
+#     data = mysql.db.select_db(sql)
 
-    if data:
-        return "Already exists"
-    else:
-        sql = "INSERT INTO device values('" + device + "','" + name + "');"
-        mysql.db.execute_db(sql)
-        return ""
+#     if data:
+#         return "Already exists"
+#     else:
+#         sql = "INSERT INTO device values('" + device + "','" + name + "');"
+#         mysql.db.execute_db(sql)
+#         return ""
 
 
 @app.route('/new_session', methods=['POST'])
