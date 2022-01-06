@@ -1,5 +1,7 @@
 from flask import Flask, jsonify, request
 import mysql_operate as mysql
+import mqtt_client
+
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -80,6 +82,25 @@ def new_session():
     # https://www.python.org/dev/peps/pep-0249/#lastrowid
     data = mysql.db.cursor.lastrowid
     return jsonify(data)
+
+
+@app.route('/start_record', methods=['POST'])
+# trigger MQTT client to start recording flight data
+def start_record():
+    session = str(request.args.get('session_id'))
+
+    mqtt_client.session_id = session
+    mqtt_client.client.loop_start()
+
+    return ""
+
+
+@app.route('/stop_record', methods=['POST'])
+# trigger MQTT client to stop record flight data
+def stop_record():
+    mqtt_client.client.loop_stop()
+
+    return ""
 
 
 if __name__ == '__main__':
