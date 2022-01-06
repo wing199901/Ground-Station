@@ -36,10 +36,11 @@ client.connect(MQTT_BROKER, MQTT_PORT, MQTT_KEEPALIVE)
 
 # client.loop_forever()
 
-
+# init session id
 session_id = 0
 
 
+# mqtt payload insert into database
 def payload_to_db(dict):
     name = dict['name']
     time = dict['time']

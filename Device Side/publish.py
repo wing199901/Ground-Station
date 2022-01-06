@@ -5,8 +5,6 @@ import datetime
 import json
 import math
 import socket
-from time import sleep
-
 from fsuipc import FSUIPC
 from paho.mqtt import client as mqtt
 
