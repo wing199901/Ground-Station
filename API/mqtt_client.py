@@ -12,7 +12,7 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     # print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
 
-    # is topic from devices
+    # check device topic
     if "Device" in msg.topic:
         message = json.loads(msg.payload)
 
@@ -34,7 +34,6 @@ client.on_subscribe = on_subscribe
 # Connect to the Broker
 client.connect(MQTT_BROKER, MQTT_PORT, MQTT_KEEPALIVE)
 
-# client.loop_forever()
 
 # init session id
 session_id = 0
@@ -94,8 +93,24 @@ def payload_to_db(dict):
     longitude = dict['longitude']
     status = dict['status']
 
+    # e.g. CONSOLE40-XXXX
     device_id = name.split("-")[1]
+
+    # check session exist
+    sql = f"SELECT id FROM session WHERE id = '{session_id}';"
+    data = mysql.db.select_db(sql)
+
+    if not data:
+        return "Wrong session id"
+
+    # check device exist
+    sql = f"SELECT id FROM device WHERE id = '{device_id}';"
+    data = mysql.db.select_db(sql)
+
+    if not data:
+        return "Wrong device id"
 
     sql = f"INSERT INTO data VALUES(NULL, {session_id}, '{device_id}', '{time}', {navigation}, {beacon}, {landing}, {taxi}, {strobes}, {pitot}, {ias}, {verticalSpeed}, {whiskeyCompass}, {stall}, {overspeed}, {slipSkid}, {turnRate}, {pitch}, {roll}, {heading}, {autopilot}, {headingSel}, {altitudeSel}, {airspeedSel}, {throttleLever}, {propellerLever}, {mixtureLever}, {magnetos}, {rpm}, {maxRPM}, {fuelSelector}, {elevatorTrim}, {parkingBrake}, {landingGear}, {flaps}, {pressure}, {mach}, {fuelWeight}, {aoa}, {sideSlip}, {flightDirector}, {flightDirectorPitch}, {flightDirectorBank}, {alternator}, {battery}, {avionics}, {fuelPump}, {altitude}, {elevatorAxis}, {aileronAxis}, {latitude}, {longitude}, '{status}')"
     print(sql)
     mysql.db.execute_db(sql)
+    return ""
