@@ -3,5 +3,5 @@ MQTT_PORT = 1883
 # MQTT_USER = "onetomany"
 # MQTT_PASSWD = "Stp@erosim2022"
 MQTT_KEEPALIVE = 60
-MQTT_TOPIC = "/Devices/+"
+MQTT_TOPIC = "Devices/+"
 

@@ -1,10 +1,14 @@
 from flask import Flask, jsonify, request
 import mysql_operate as mysql
-import mqtt_client
+from mqtt_client import MyMQTTClass
+from mqtt_config import *
 
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
+
+# mqtt client dict
+clients = {}
 
 
 # register new device
@@ -46,7 +50,7 @@ def new_session():
     mysql.db.execute_db(sql)
     # https://www.python.org/dev/peps/pep-0249/#lastrowid
     data = mysql.db.cursor.lastrowid
-    data = {"session_id":data}
+    data = {"session_id": data}
     return jsonify(data)
 
 
@@ -84,7 +88,7 @@ def get_all_devices_by_session_id():
 
     sql = f"SELECT device.id, device.name FROM device INNER JOIN session_device on device.id = session_device.device_id where session_device.session_id = {session};"
     data = mysql.db.select_db(sql)
-    data = {"devices":data}
+    data = {"devices": data}
     return jsonify(data)
 
 
@@ -93,15 +97,25 @@ def get_all_devices_by_session_id():
 def start_record():
     session = str(request.args.get('session_id'))
 
-    mqtt_client.session_id = session
-    mqtt_client.client.loop_start()
+    client = MyMQTTClass(session_id=session)
+    client.run()
+
+    # add client to clients dict
+    clients[session] = client
     return ""
 
 
 # trigger MQTT client to stop record flight data
 @app.route('/stop_session', methods=['POST'])
 def stop_record():
-    mqtt_client.client.loop_stop()
+    session = str(request.args.get('session_id'))
+
+    try:
+        client = clients[session]
+        client.stop()
+        del clients[session]
+    except:
+        return "Session not exists"
     return ""
 
 

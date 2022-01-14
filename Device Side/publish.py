@@ -96,7 +96,7 @@ def getStatus(pause, sim_in_menu):
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
-    client.subscribe(f"/Devices/{hostname}/Command", qos=2)
+    client.subscribe(f"Devices/{hostname}/Command", qos=2)
 
 
 def on_message(client, userdata, msg):
@@ -135,7 +135,7 @@ if __name__ == "__main__":
 
     # setup last will
     client.will_set(
-        f"/Devices/{hostname}",
+        f"Devices/{hostname}",
         json.dumps({'status': "offline", }),
         qos=0,
         retain=False
@@ -203,5 +203,5 @@ if __name__ == "__main__":
         ], True)
 
     while True:
-        client.publish(f"/Devices/{hostname}", json.dumps(payload()))
+        client.publish(f"Devices/{hostname}", json.dumps(payload()))
         client.loop()

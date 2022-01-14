@@ -1,46 +1,48 @@
 import paho.mqtt.client as mqtt
 from mqtt_config import *
-import json
 import mysql_operate as mysql
+import random
+import json
 
 
-def on_connect(client, userdata, flags, rc):
-    print("Connected with result code " + str(rc))
-    client.subscribe(MQTT_TOPIC, qos=0)
+class MyMQTTClass:
+    # init session id
+    session_id = 0
 
+    def __init__(self, session_id=0):
+        self._client = mqtt.Client(client_id=f"API-{random.randint(0, 1000)}")
+        self._client.on_connect = self.on_connect
+        self._client.on_message = self.on_message
+        self._client.on_subscribe = self.on_subscribe
+        self.session_id = session_id
 
-def on_message(client, userdata, msg):
-    # print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+    def on_connect(self, client, userdata, flags, rc):
+        print("Connected with result code " + str(rc))
 
-    # check device topic
-    if "Device" in msg.topic:
-        message = json.loads(msg.payload)
+    def on_message(self, client, userdata, msg):
+        print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
 
-        # start insert data to db
-        payload_to_db(message)
+        # check device topic
+        if "Device" in msg.topic:
+            message = json.loads(msg.payload)
 
+            # start insert data to db
+            payload_to_db(message, self.session_id)
 
-def on_subscribe(client, userdata, mid, granted_qos):
-    print("On Subscribed: qos = %d" % granted_qos)
+    def on_subscribe(self, client, userdata, mid, granted_qos):
+        print("On Subscribed: qos = %d" % granted_qos)
 
+    def run(self):
+        self._client.connect(MQTT_BROKER, MQTT_PORT, MQTT_KEEPALIVE)
+        self._client.subscribe(MQTT_TOPIC, qos=1)
+        self._client.loop_start()
 
-client = mqtt.Client()
-
-# Assign event callbacks
-client.on_connect = on_connect
-client.on_message = on_message
-client.on_subscribe = on_subscribe
-
-# Connect to the Broker
-client.connect(MQTT_BROKER, MQTT_PORT, MQTT_KEEPALIVE)
-
-
-# init session id
-session_id = 0
+    def stop(self):
+        self._client.loop_stop()
 
 
 # mqtt payload insert into database
-def payload_to_db(dict):
+def payload_to_db(dict, session_id):
     name = dict['name']
     time = dict['time']
     navigation = dict['lights']['navigation']
