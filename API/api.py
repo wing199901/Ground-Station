@@ -128,7 +128,7 @@ def get_all_flight_data_by_session_id():
 
     sql = f"SELECT * FROM data WHERE session_id = {session} AND device_id = '{device}';"
     data = mysql.db.select_db(sql)
-    data = {device: data}
+    data = {"flight_record": data}
     return jsonify(data)
 
 
