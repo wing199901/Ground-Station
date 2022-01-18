@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 import mysql_operate as mysql
 from mqtt_client import MyMQTTClass
 from mqtt_config import *
@@ -6,6 +7,7 @@ from mqtt_config import *
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
+CORS(app)
 
 # mqtt client dict
 clients = {}
