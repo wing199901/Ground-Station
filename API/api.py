@@ -7,7 +7,7 @@ from mqtt_config import *
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
-CORS(app)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # mqtt client dict
 clients = {}
