@@ -20,21 +20,21 @@ class MysqlDb():
         self.cursor = self.conn.cursor(cursor=pymysql.cursors.DictCursor)
 
     def select_db(self, sql):
+        lock.acquire()
         # check connection
         self.conn.ping(reconnect=True)
-        lock.acquire()
         self.cursor.execute(sql)
-        lock.release()
         data = self.cursor.fetchall()
+        lock.release()
         return data
 
     def execute_db(self, sql):
         try:
-            self.conn.ping(reconnect=True)
             lock.acquire()
+            self.conn.ping(reconnect=True)
             self.cursor.execute(sql)
-            lock.release()
             self.conn.commit()
+            lock.release()
         except Exception as e:
             self.conn.rollback()
             return e
