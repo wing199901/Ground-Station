@@ -1,5 +1,9 @@
 import pymysql
 from mysql_config import *
+import threading
+
+
+lock = threading.Lock()
 
 
 class MysqlDb():
@@ -9,21 +13,27 @@ class MysqlDb():
             port=port,
             user=user,
             passwd=passwd,
-            db=db
+            db=db,
+            connect_timeout=2,
+            read_timeout=5
         )
         self.cursor = self.conn.cursor(cursor=pymysql.cursors.DictCursor)
 
     def select_db(self, sql):
         # check connection
         self.conn.ping(reconnect=True)
+        lock.acquire()
         self.cursor.execute(sql)
+        lock.release()
         data = self.cursor.fetchall()
         return data
 
     def execute_db(self, sql):
         try:
             self.conn.ping(reconnect=True)
+            lock.acquire()
             self.cursor.execute(sql)
+            lock.release()
             self.conn.commit()
         except Exception as e:
             self.conn.rollback()
