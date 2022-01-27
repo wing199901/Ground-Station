@@ -72,7 +72,7 @@ def create_device(device_id):
 # get all session
 @app.route('/api/sessions', methods=['GET'])
 def get_all_session():
-    sql = f"SELECT * FROM session;"
+    sql = "SELECT id FROM session;"
     data = mysql.db.select_db(sql)
     return jsonify({"sessions": data})
 
@@ -80,11 +80,18 @@ def get_all_session():
 # get session details
 @app.route('/api/sessions/<int:session_id>', methods=['GET'])
 def get_all_devices_by_session_id(session_id):
+    sql = f"SELECT * FROM session WHERE id = {session_id};"
+    mysql.db.cursor.execute(sql)
+    data = mysql.db.cursor.fetchone()
+
     sql = f"SELECT device.id, device.name FROM device INNER JOIN session_device on device.id = session_device.device_id where session_device.session_id = {session_id};"
-    data = mysql.db.select_db(sql)
+    device_data = mysql.db.select_db(sql)
+    dict = {}
+    data["devices"] = device_data
+    dict["session"] = data
 
     if data:
-        return jsonify({"session": data})
+        return jsonify(dict)
     else:
         return make_response(jsonify({'error': f'Session id {session_id} does not exist.'}), 404)
 
