@@ -211,7 +211,7 @@ def stop_record(session_id):
 
 @app.errorhandler(404)
 def not_found(error):
-    return make_response(jsonify({'error': error}), 404)
+    return make_response(jsonify({'error': f'{error}'}), 404)
 
 
 if __name__ == '__main__':
