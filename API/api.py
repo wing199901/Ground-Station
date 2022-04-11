@@ -16,7 +16,7 @@ mqtt_clients = {}
 # check is it online
 @app.route('/')
 def index():
-    if mysql.db.conn.open():
+    if mysql.db.conn.open:
         return "Online"
     else:
         return "Offline"
