@@ -13,11 +13,13 @@ CORS(app)
 # mqtt client dict
 mqtt_clients = {}
 
-
+# check is it online
 @app.route('/')
 def index():
-    return "Online"
-
+    if mysql.db.conn.open():
+        return "Online"
+    else:
+        return "Offline"
 
 # get all devices
 @app.route('/api/devices', methods=['GET'])
@@ -32,7 +34,7 @@ def get_all_devices():
 # get a device
 @app.route('/api/devices/<string:device_id>', methods=['GET'])
 def get_device(device_id):
-    # device id must be 3 letters or 4 letters
+    # device id must be 3 letters or 4 letters, such as ModelA-XXX and Console40-XXXX
     if len(device_id) != 3 and len(device_id) != 4:
         return make_response(jsonify({'error': f'{device_id} not a propre device id.'}), 404)
 
