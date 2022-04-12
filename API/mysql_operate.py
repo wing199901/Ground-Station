@@ -40,9 +40,12 @@ class MysqlDb():
             return e
 
     def __del__(self):
-        self.cursor.close()
-        # database disconnect
-        self.conn.close()
+        try:
+            self.cursor.close()
+            # database disconnect
+            self.conn.close()
+        except Exception as e:
+            return e
 
 
 db = MysqlDb(MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB)

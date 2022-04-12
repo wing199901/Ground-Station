@@ -4,7 +4,7 @@
 ## MQTT Broker
 We use [eclipse-mosquitto](https://hub.docker.com/_/eclipse-mosquitto "eclipse-mosquitto") as Broker
 ### Quickstart
-1. SSH to Raspberry Pi:
+1. SSH to Raspberry Pi: 
 ```bash
  ssh ubuntu@192.168.0.128
 ```
@@ -74,4 +74,4 @@ To open project at Qt, just double click **Ground-Station.pro**.
 - Full logbook of flights, with many reports
 - PDF chart viewer
 - English language
-- Much more
+- Much more 

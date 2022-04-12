@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  rasa:
+    image: azatccontainerregistry.azurecr.io/rasa:v1
+    networks: [ 'rasa-network' ]
+    environment:
+      TZ: "Asia/Hong_Kong"
+    ports:
+      - "5005:5005"
+    expose:
+      - "5005"
+    domainname: "atcrasa"
+    command:
+      [
+        "rasa",
+        "run",
+        "--model",
+        "20201228-173504.tar.gz",
+        "--remote-storage",
+        "azure",
+        "--debug"
+      ]
+
+  actions:
+    image: azatccontainerregistry.azurecr.io/actions:20220408
+    networks: [ 'rasa-network' ]
+    environment:
+      TZ: "Asia/Hong_Kong"
+    expose:
+      - "5055"
+
+networks: { rasa-network: {} }
