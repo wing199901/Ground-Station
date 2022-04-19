@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  api:
+    image: aerosimcontainerregistry.azurecr.io/ground-station-api:20220414
+    environment:
+      TZ: "Asia/Hong_Kong"
+    domainname: "onetomany"
+
+  mosquitto:
+    image: eclipse-mosquitto:1.6.15
+    environment:
+      TZ: "Asia/Hong_Kong"

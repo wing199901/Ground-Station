@@ -3,17 +3,17 @@ FROM python:alpine as base
 
 FROM base as builder
 # install dependencies
-RUN mkdir /install
-WORKDIR /install
-
 COPY requirements.txt .
-RUN pip install --root --install-option="--prefix=/install" -r requirements.txt
+RUN pip install --user -r requirements.txt
 
 FROM base
 # copy only the dependencies installation from the 1st stage image
-COPY --from=builder /install /usr/local
+COPY --from=builder /root/.local /root/.local
 
 COPY . /app
 WORKDIR /app
+
+# update PATH environment variable
+ENV PATH=/home/app/.local/bin:$PATH
 
 CMD ["python", "api.py"]
