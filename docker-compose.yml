@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   api:
-    image: aerosimcontainerregistry.azurecr.io/ground-station-api:20220414
+    image: aerosimcontainerregistry.azurecr.io/ground-station-api:20220419
     domainname: "onetomany"
     environment:
       TZ: "Asia/Hong_Kong"
