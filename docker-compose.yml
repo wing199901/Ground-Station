@@ -1,24 +1,26 @@
-version: '3'
+version: "3.8"
 services:
   api:
     image: aerosimcontainerregistry.azurecr.io/ground-station-api:20220414
-    networks: [ 'network' ]
+    domainname: "onetomany"
     environment:
       TZ: "Asia/Hong_Kong"
-    ports:
-      - 5000:5000
     expose:
       - "5000"
-    domainname: "onetomany"
+    ports:
+      - 5000:5000
+    networks:
+      - default
 
   mosquitto:
     image: eclipse-mosquitto:1.6.15
-    networks: [ 'network' ]
     environment:
       TZ: "Asia/Hong_Kong"
-    ports:
-      - 1883:1883
     expose:
       - "1883"
-
-networks: { network: {} }
+    ports:
+      - 1883:1883
+    networks:
+      - default
+networks:
+  default: 
