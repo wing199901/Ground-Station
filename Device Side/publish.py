@@ -149,7 +149,7 @@ if __name__ == "__main__":
     client.on_disconnect = on_disconnect
 
     # Connect to the Broker
-    client.connect('ontomany.eastasia.azurecontainer.io', 1883, 60)
+    client.connect('onetomany.eastasia.azurecontainer.io', 1883, 60)
 
     with FSUIPC() as fsuipc:
         prepared = fsuipc.prepare_data([
