@@ -6,7 +6,7 @@ import datetime
 import win32api
 
 # List of servers in order of attempt of fetching
-server_list = ['time.nist.gov', 'time.windows.com', 'pool.ntp.org']
+server_list = ['time.windows.com', 'pool.ntp.org']
 
 '''
 Returns the epoch time fetched from the NTP server passed as argument.
@@ -14,11 +14,12 @@ Returns none if the request is timed out (5 seconds).
 '''
 
 
-def gettime_ntp(addr='time.nist.gov'):
+def gettime_ntp(addr='time.windows.com'):
     # http://code.activestate.com/recipes/117211-simple-very-sntp-client/
     TIME1970 = 2208988800      # Thanks to F.Lundh
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    data = '\x1b' + 47 * '\0'
+    # data = '\x1b' + 47 * '\0'
+    data = bytes('\x1b' + 47 * '\0', 'utf-8')
     try:
         # Timing out the connection after 5 seconds, if no response received
         client.settimeout(5.0)
@@ -30,9 +31,11 @@ def gettime_ntp(addr='time.nist.gov'):
             return epoch_time
     except socket.timeout:
         return None
+    except socket.gaierror:
+        return None
 
 
-if __name__ == "__main__":
+def update_wins_time():
     # Iterates over every server in the list until it finds time from any one.
     for server in server_list:
         epoch_time = gettime_ntp(server)
@@ -48,3 +51,7 @@ if __name__ == "__main__":
             break
         else:
             print("Could not find time from " + server)
+
+
+if __name__ == "__main__":
+    update_wins_time()

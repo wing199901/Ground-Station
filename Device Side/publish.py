@@ -5,9 +5,9 @@ import datetime
 import json
 import math
 import socket
-import os
 from fsuipc import FSUIPC
 from paho.mqtt import client as mqtt
+from ntp_update_time import update_wins_time
 
 
 hostname = socket.gethostname()
@@ -130,7 +130,9 @@ def on_disconnect(client, userdata, rc=0):
 
 
 if __name__ == "__main__":
-    os.system("w32tm /resync")
+    # update Windows time
+    # exec(open("ntp_update_time.py").read())
+    update_wins_time()
 
     # client = mqtt.Client(client_id=device_id, protocol=mqtt.MQTTv311)
     client = mqtt.Client()
