@@ -13,13 +13,15 @@ CORS(app)
 # mqtt client dict
 mqtt_clients = {}
 
+
 # check is it online
 @app.route('/')
 def index():
     if mysql.db.conn.open:
-        return "Online"
+        return "MySQL Online"
     else:
-        return "Offline"
+        return "MySQL Offline"
+
 
 # get all devices
 @app.route('/api/devices', methods=['GET'])
@@ -224,4 +226,4 @@ def not_found(error):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0')

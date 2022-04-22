@@ -16,4 +16,4 @@ WORKDIR /app
 # update PATH environment variable
 ENV PATH=/home/app/.local/bin:$PATH
 
-CMD ["python", "api.py"]
+CMD ["python", "app.py"]

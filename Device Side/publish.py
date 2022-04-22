@@ -5,6 +5,7 @@ import datetime
 import json
 import math
 import socket
+import os
 from fsuipc import FSUIPC
 from paho.mqtt import client as mqtt
 
@@ -13,7 +14,6 @@ hostname = socket.gethostname()
 
 
 def payload():
-
     with FSUIPC() as fsuipc:
         lights, pause, pitot, ias, vertical_speed, whiskey_compass, stall, overspeed, slip_skid, turn_rate, pitch, roll, heading, autopilot, heading_sel, altitude_sel, airspeed_sel, eng1_thro_lever, eng1_prop_lever, eng1_mix_lever, eng1_magnetos, fuel_selector, elevator_trim, parking_brake, landing_gear, flaps, pressure, mach, fuel_weight, eng1_rpm, eng1_max_rpm, angle_of_attack, side_slip, flight_director, flight_director_pitch, flight_director_bank, alternator, battery, avionics, fuel_pump,  altitude, elevator_axis, aileron_axis, sim_in_menu, latitude, longitude = prepared.read()
 
@@ -130,6 +130,8 @@ def on_disconnect(client, userdata, rc=0):
 
 
 if __name__ == "__main__":
+    os.system("w32tm /resync")
+
     # client = mqtt.Client(client_id=device_id, protocol=mqtt.MQTTv311)
     client = mqtt.Client()
 

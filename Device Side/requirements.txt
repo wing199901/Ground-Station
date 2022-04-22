@@ -1,0 +1,2 @@
+fsuipc==1.4.0
+paho_mqtt==1.6.1

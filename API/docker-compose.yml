@@ -1,14 +1,12 @@
 version: "3.8"
 services:
-  api:
-    image: aerosimcontainerregistry.azurecr.io/ground-station-api:20220419
+  flask:
+    image: aerosimcontainerregistry.azurecr.io/ground-station-api:20220420
     domainname: "onetomany"
     environment:
       TZ: "Asia/Hong_Kong"
-    expose:
-      - "5000"
     ports:
-      - 5000:5000
+      - "5000:5000"
     networks:
       - default
 
@@ -16,10 +14,8 @@ services:
     image: eclipse-mosquitto:1.6.15
     environment:
       TZ: "Asia/Hong_Kong"
-    expose:
-      - "1883"
     ports:
-      - 1883:1883
+      - "1883:1883"
     networks:
       - default
 networks:
