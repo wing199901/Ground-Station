@@ -6,7 +6,7 @@ import datetime
 import win32api
 
 # List of servers in order of attempt of fetching
-server_list = ['time.windows.com', 'pool.ntp.org']
+server_list = ['stdtime.gov.hk', 'time.windows.com', 'pool.ntp.org']
 
 '''
 Returns the epoch time fetched from the NTP server passed as argument.
@@ -14,7 +14,7 @@ Returns none if the request is timed out (5 seconds).
 '''
 
 
-def gettime_ntp(addr='time.windows.com'):
+def gettime_ntp(addr='stdtime.gov.hk'):
     # http://code.activestate.com/recipes/117211-simple-very-sntp-client/
     TIME1970 = 2208988800      # Thanks to F.Lundh
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
