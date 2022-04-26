@@ -133,7 +133,7 @@
  ['publish.exe.manifest,1'],
  False,
  False,
- 1650609297,
+ 1650961887,
  [('run.exe',
    'C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit\\run.exe',
    'EXECUTABLE')])

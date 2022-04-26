@@ -1,0 +1,1 @@
+pyinstaller -F --uac-admin -r publish.exe.manifest,1 publish.py
