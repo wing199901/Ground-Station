@@ -7,17 +7,31 @@ lock = threading.Lock()
 
 
 class MysqlDb():
-    def __init__(self, host, port, user, passwd, db):
-        self.conn = pymysql.connect(
-            host=host,
-            port=port,
-            user=user,
-            passwd=passwd,
-            db=db,
-            connect_timeout=2,
-            read_timeout=5
-        )
-        self.cursor = self.conn.cursor(cursor=pymysql.cursors.DictCursor)
+
+    isConnected = False
+
+    # init mysql
+    def __init__(self):
+        if not self.isConnected:
+            self.isConnected = self.connect()
+
+    def connect(self):
+        try:
+            self.conn = pymysql.connect(
+                host=MYSQL_HOST,
+                port=MYSQL_PORT,
+                user=MYSQL_USER,
+                passwd=MYSQL_PASSWD,
+                db=MYSQL_DB,
+                connect_timeout=2,
+                read_timeout=5
+            )
+            self.cursor = self.conn.cursor(cursor=pymysql.cursors.DictCursor)
+            print("connect mysql success")
+            return True
+        except pymysql.Error as err:
+            print("Connect mysql fail, error =", err)
+            return False
 
     def select_db(self, sql):
         lock.acquire()
@@ -35,17 +49,17 @@ class MysqlDb():
             self.cursor.execute(sql)
             self.conn.commit()
             lock.release()
-        except Exception as e:
+        except Exception as err:
             self.conn.rollback()
-            return e
+            return err
 
     def __del__(self):
         try:
             self.cursor.close()
-            # database disconnect
+            # MySQL disconnect
             self.conn.close()
-        except Exception as e:
-            return e
+        except Exception as err:
+            return err
 
 
-db = MysqlDb(MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB)
+db = MysqlDb()

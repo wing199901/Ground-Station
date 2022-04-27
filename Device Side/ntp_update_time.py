@@ -1,7 +1,5 @@
 import socket
 import struct
-# import sys
-# import time
 import datetime
 import win32api
 
