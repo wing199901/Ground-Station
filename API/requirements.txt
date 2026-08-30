@@ -1,4 +1,4 @@
 Flask==2.1.1
 Flask_Cors==3.0.10
 paho_mqtt==1.6.1
-PyMySQL==1.0.2
+PyMySQL==1.1.1
