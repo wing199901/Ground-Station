@@ -6,7 +6,7 @@ We use [eclipse-mosquitto](https://hub.docker.com/_/eclipse-mosquitto "eclipse-m
 ### Quickstart
 1. SSH to Raspberry Pi: 
 ```bash
- ssh ubuntu@192.168.0.128
+ ssh ubuntu@[RasPi's IP]
 ```
 2. Login to Raspberry Pi:
 ```bash
